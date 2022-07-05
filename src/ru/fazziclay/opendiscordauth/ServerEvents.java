@@ -1,5 +1,6 @@
 package ru.fazziclay.opendiscordauth;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
-
 
 public class ServerEvents implements Listener {
     @EventHandler
@@ -47,6 +47,7 @@ public class ServerEvents implements Listener {
             Utils.sendMessage(player, Config.messageLoginInstructions);
         }
 
+        player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
     }
 

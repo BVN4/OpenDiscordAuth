@@ -11,6 +11,7 @@ import java.util.UUID;
 
 
 public class Account {
+
     // Static
     public static List<Account> accounts = new ArrayList<>();
     public static JSONArray     accountsJson = new JSONArray();

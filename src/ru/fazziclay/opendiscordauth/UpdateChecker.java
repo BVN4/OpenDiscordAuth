@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class UpdateChecker {
+
     // THIS
     public static Integer thisVersionTag = 7;
     public static String  thisVersionName = "0.5.1 InDev";

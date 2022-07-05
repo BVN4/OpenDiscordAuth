@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class Utils {
+
     public static String getPlayerIp(Player player) {
         return Objects.requireNonNull(player.getAddress()).getHostName();
     }

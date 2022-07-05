@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,7 +17,12 @@ public class LoginManager {
 
     public static void login(String uuid) {
         LoginManager.notAuthorizedPlayers.remove(uuid);
-        Utils.sendMessage(Bukkit.getPlayer(UUID.fromString(uuid)), Config.messageSuccessfulAuthorization);
+
+        Player player = Bukkit.getPlayer(UUID.fromString(uuid));
+        assert player != null;
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> player.setGameMode(GameMode.SURVIVAL));
+
+        Utils.sendMessage(player, Config.messageSuccessfulAuthorization);
     }
 
     public static void kickAllNotAuthorizedPlayers() {

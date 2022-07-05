@@ -1,6 +1,7 @@
 package ru.fazziclay.opendiscordauth;
 
 public class Config {
+
     public static Boolean isDebugEnable = false;
 
     public static String discordBotToken = Main.pluginConfig.getString("discordBotToken");

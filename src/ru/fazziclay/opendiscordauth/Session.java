@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 
 public class Session {
+
     // Static
     public static List<Session> sessions = new ArrayList<>();
 

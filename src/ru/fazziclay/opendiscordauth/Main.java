@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 public class Main extends JavaPlugin {
+
     public static FileConfiguration pluginConfig;
 
     @Override
