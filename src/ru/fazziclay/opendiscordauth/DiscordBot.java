@@ -4,7 +4,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
 
@@ -48,4 +55,14 @@ public class DiscordBot extends ListenerAdapter {
             Utils.sendMessage(channel, Config.messageCodeNotFound);
         }
     }
+
+    @Override
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+        CommandSender sender = new MyCommandSender(event);
+        if (event.getName().equals("rc")) {
+            Bukkit.dispatchCommand(sender, Objects.requireNonNull(event.getOption("command")).toString());
+            event.deferReply().queue(); // reply immediately
+        }
+    }
+
 }
