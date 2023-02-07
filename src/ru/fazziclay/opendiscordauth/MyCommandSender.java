@@ -96,7 +96,7 @@ public class MyCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
-        this.event.reply(message).queue();
+        this.event.getHook().editOriginal(message).queue();
     }
 
     @Override
