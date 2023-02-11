@@ -9,8 +9,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.CommandException;
+
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
@@ -58,11 +61,39 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
-        CommandSender sender = new MyCommandSender(event);
+        MyCommandSender sender = new MyCommandSender(event);
+        String command = Objects.requireNonNull(event.getOption("command")).getAsString();
+        Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
-            Bukkit.dispatchCommand(sender, Objects.requireNonNull(event.getOption("command")).toString());
-            event.deferReply().queue(); // reply immediately
+            if(!event.getUser().getId().equals("256114365894230018")) {
+                event.reply("У вас недостаточно прав").queue();
+            }
+            event.deferReply().queue();
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                try {
+                    boolean status = Bukkit.dispatchCommand(sender, command);
+                    if(status) {
+                        event.getHook().editOriginal("Команда исполнена").queue();
+                    } else {
+                        event.getHook().editOriginal("Ошибка").queue();
+                    };
+                } catch (CommandException e) {
+                    event.getHook().editOriginal(
+                            e.getMessage()
+                                    + "\n" + e.getCause()
+                                    + "\n" + Arrays.toString(e.getSuppressed())
+                                    + "\n" + e.getClass()
+                                    + "\n" + Arrays.toString(e.getStackTrace())
+                    ).queue();
+                }
+            });
         }
+    }
+    @Override
+    public void onReady(@NotNull ReadyEvent event) {
+        DiscordBot.bot.getPresence().setActivity(
+                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+        );
     }
 
 }
