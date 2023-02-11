@@ -1,5 +1,7 @@
 package ru.fazziclay.opendiscordauth;
 
+import net.dv8tion.jda.api.entities.Activity;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -49,6 +51,9 @@ public class ServerEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
+        DiscordBot.bot.getPresence().setActivity(
+                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+        );
     }
 
     @EventHandler
@@ -69,8 +74,10 @@ public class ServerEvents implements Listener {
         if (LoginManager.isAuthorized(uuid)) {
             Session.update(nickname, ip);
         }
-
         LoginManager.notAuthorizedPlayers.remove(uuid);
+        DiscordBot.bot.getPresence().setActivity(
+                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+        );
     }
 
     @EventHandler
