@@ -94,7 +94,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static void updateOnlineStatus() {
         DiscordBot.bot.getPresence().setActivity(
-                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+            Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
         );
     }
 
