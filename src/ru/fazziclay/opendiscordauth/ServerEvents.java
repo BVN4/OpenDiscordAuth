@@ -51,9 +51,7 @@ public class ServerEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
-        DiscordBot.bot.getPresence().setActivity(
-                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
-        );
+        DiscordBot.updateOnlineStatus();
     }
 
     @EventHandler
@@ -75,9 +73,7 @@ public class ServerEvents implements Listener {
             Session.update(nickname, ip);
         }
         LoginManager.notAuthorizedPlayers.remove(uuid);
-        DiscordBot.bot.getPresence().setActivity(
-                Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
-        );
+        DiscordBot.updateOnlineStatus();
     }
 
     @EventHandler

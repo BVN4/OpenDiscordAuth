@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandException;
 
 import org.jetbrains.annotations.NotNull;
@@ -69,23 +68,20 @@ public class DiscordBot extends ListenerAdapter {
         if (event.getName().equals("rc")) {
             if(!event.getUser().getId().equals("256114365894230018")) {
                 event.reply("У вас недостаточно прав").queue();
+                return;
             }
             event.deferReply().queue();
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 try {
                     boolean status = Bukkit.dispatchCommand(sender, command);
-                    if(status) {
-                        event.getHook().editOriginal("Команда исполнена").queue();
-                    } else {
-                        event.getHook().editOriginal("Ошибка").queue();
-                    };
+                    event.getHook().editOriginal(status ? "Команда исполнена" : "Ошибка").queue();
                 } catch (CommandException e) {
                     event.getHook().editOriginal(
-                            e.getMessage()
-                                    + "\n" + e.getCause()
-                                    + "\n" + Arrays.toString(e.getSuppressed())
-                                    + "\n" + e.getClass()
-                                    + "\n" + Arrays.toString(e.getStackTrace())
+                        e.getMessage()
+                            + "\n" + e.getCause()
+                            + "\n" + Arrays.toString(e.getSuppressed())
+                            + "\n" + e.getClass()
+                            + "\n" + Arrays.toString(e.getStackTrace())
                     ).queue();
                 }
             });
@@ -93,6 +89,10 @@ public class DiscordBot extends ListenerAdapter {
     }
     @Override
     public void onReady(@NotNull ReadyEvent event) {
+        DiscordBot.updateOnlineStatus();
+    }
+
+    public static void updateOnlineStatus() {
         DiscordBot.bot.getPresence().setActivity(
                 Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
         );
