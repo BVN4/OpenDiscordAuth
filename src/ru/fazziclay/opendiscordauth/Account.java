@@ -1,5 +1,4 @@
 package ru.fazziclay.opendiscordauth;
-
 import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
