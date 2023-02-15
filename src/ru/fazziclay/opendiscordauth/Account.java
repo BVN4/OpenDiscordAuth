@@ -13,7 +13,6 @@ public class Account {
     // Static
     public static List<Account> accounts = new ArrayList<>();
     public static JSONArray     accountsJson = new JSONArray();
-    public static boolean       accountsForceRewrite = false;
 
 
     public static void makePermanent(Account account) {
@@ -22,7 +21,7 @@ public class Account {
         if (account.temp) {
             account.temp = false;
 
-            Account.accountsJson.put(Account.toJSON(account));
+            Account.accountsJson.put(account.toJSON());
 
             Utils.writeFile(Config.accountsFilePath, accountsJson.toString(4));
         }
@@ -113,6 +112,11 @@ public class Account {
         Account.delete(this);
     }
 
+    public void update() {
+        Utils.debug("[Account] [object] delete()");
+        Account.update(this);
+    }
+
     public static void rewriteAccounts() {
         int i = 0;
         Account.accountsJson = new JSONArray();
@@ -123,25 +127,15 @@ public class Account {
         }
     }
 
-    public Account update(Member member) {
+    public static void update(Account account) {
+        Member member = DiscordBot.getMember(account.ownerDiscord);
 
-        this.effectiveNick = member.getEffectiveName();
-        this.effectiveAvatarUrl = member.getEffectiveName();
-        this.guildColor = Utils.getMemberHexColor(member);
+        account.effectiveNick = member.getEffectiveName();
+        account.effectiveAvatarUrl = member.getEffectiveName();
+        account.guildColor = Utils.getMemberHexColor(member);
 
-        int i = 0;
-
-        while (i < Account.accountsJson.length()) {
-            if (Account.accountsJson.getJSONObject(i).getString("discord").equals(member.getId())) break;
-        }
-
-        Account.accountsJson.put(i ,this.toJSON());
-
-        return this;
-    }
-
-    public Account update() {
-        return this.update(DiscordBot.getMember(this.ownerDiscord));
+        account.delete();
+        account.makePermanent();
     }
 
     public static JSONObject toJSON(Account account) {
