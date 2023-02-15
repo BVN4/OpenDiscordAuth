@@ -36,12 +36,15 @@ public class DiscordBot extends ListenerAdapter {
         //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
         if (channel.getType().isGuild()) {
             if (channel.getId().equals(Config.discordChatIdForTranslation)) {
-                Bukkit.broadcastMessage(Utils.truncate(
-                    Config.globalMessageFormat
-                        .replace("&", "§")
-                        .replace("%color", Utils.getMemberHexColor(member))
-                        .replace("%displayname", member.getEffectiveName())
-                        .replace("%message", event.getMessage().getContentDisplay()), 256)
+                Bukkit.broadcastMessage(
+                    Utils.truncate(
+                        Config.globalMessageFormat
+                            .replace("&", "§")
+                            .replace("%color", Utils.getMemberHexColor(member))
+                            .replace("%displayname", member.getEffectiveName())
+                            .replace("%message", event.getMessage().getContentDisplay()),
+                        256
+                    )
                 );
             }
             return;
