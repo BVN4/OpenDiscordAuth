@@ -23,7 +23,7 @@ public class LoginManager {
         Account account = Account.getByValue(0, player.getName());
         assert account != null;
 
-        account.update();
+        account.addMemberData();
 
         Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
             player.setGameMode(GameMode.SURVIVAL);

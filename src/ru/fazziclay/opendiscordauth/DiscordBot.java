@@ -27,7 +27,7 @@ public class DiscordBot extends ListenerAdapter {
         String content           = event.getMessage().getContentRaw();
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
-        Member member = event.getMessage().getMember();
+        Member member            = event.getMessage().getMember();
 
         if (author.isBot()) {
             return;
@@ -67,13 +67,7 @@ public class DiscordBot extends ListenerAdapter {
 
             } else {
                 Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == false");
-                Account.create(
-                    Objects.requireNonNull(DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation))
-                        .getGuild()
-                        .retrieveMember(author)
-                        .complete(),
-                    tempCode.ownerNickname
-                );
+                Account.create(author, tempCode.ownerNickname);
             }
 
             tempCode.delete();

@@ -1,4 +1,5 @@
 package ru.fazziclay.opendiscordauth;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
@@ -45,20 +46,13 @@ public class Account {
         // remove
     }
 
-    public static void create(Member ownerDiscord, String ownerNickname) {
+    public static void create(User ownerDiscord, String ownerNickname) {
         Utils.debug("[Account] create()");
 
-        String discordNickname = ownerDiscord.getUser().getAsTag();
+        String discordNickname = ownerDiscord.getAsTag();
         Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
 
-        Account account = new Account(
-            ownerDiscord.getId(),
-            ownerNickname,
-            true,
-            ownerDiscord.getEffectiveName(),
-            ownerDiscord.getEffectiveAvatarUrl(),
-            Utils.getMemberHexColor(ownerDiscord)
-        );
+        Account account = new Account(ownerDiscord.getId(), ownerNickname, true);
 
         Account.accounts.add(account);
     }
@@ -112,29 +106,23 @@ public class Account {
         Account.delete(this);
     }
 
-    public void update() {
+    public void addMemberData() {
         Utils.debug("[Account] [object] update()");
-        Account.update(this);
+        Account.addMemberData(this);
     }
 
-    public static void update(Account account) {
+    public static void addMemberData(Account account) {
         Member member = DiscordBot.getMember(account.ownerDiscord);
 
         account.effectiveNick = member.getEffectiveName();
         account.effectiveAvatarUrl = member.getEffectiveName();
         account.guildColor = Utils.getMemberHexColor(member);
-
-        account.delete();
-        account.makePermanent();
     }
 
     public static JSONObject toJSON(Account account) {
         JSONObject jsonAccount = new JSONObject();
         jsonAccount.put("discord", account.ownerDiscord);
         jsonAccount.put("nickname", account.ownerNickname);
-        jsonAccount.put("effectiveNick", account.effectiveNick);
-        jsonAccount.put("effectiveAvatarUrl", account.effectiveAvatarUrl);
-        jsonAccount.put("guildColor", account.guildColor);
         return jsonAccount;
     }
 
@@ -143,14 +131,11 @@ public class Account {
     }
 
     // Constructor
-    public Account(String ownerDiscord, String ownerNickname, boolean temp, String guildNick, String effectiveAvatarUrl, String nickColor) {
+    public Account(String ownerDiscord, String ownerNickname, boolean temp) {
         Utils.debug("[Account] -> created new object: (ownerDiscord="+ownerDiscord+"; ownerNickname="+ownerNickname+"; temp="+temp+")");
 
         this.ownerDiscord = ownerDiscord;
         this.ownerNickname = ownerNickname;
         this.temp = temp;
-        this.effectiveNick = guildNick;
-        this.effectiveAvatarUrl = effectiveAvatarUrl;
-        this.guildColor = nickColor;
     }
 }

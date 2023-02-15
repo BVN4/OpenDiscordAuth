@@ -94,19 +94,7 @@ public class Main extends JavaPlugin {
             String discord  = accountJson.getString("discord");
             String nickname = accountJson.getString("nickname");
 
-            String effectiveNick = accountJson.has("effectiveNick")
-                ? accountJson.getString("effectiveNick")
-                : "";
-
-            String effectiveAvatarUrl = accountJson.has("effectiveAvatarUrl")
-                ? accountJson.getString("effectiveAvatarUrl")
-                : "";
-
-            String guildColor = accountJson.has("guildColor")
-                ? accountJson.getString("guildColor")
-                : "";
-
-            Account account = new Account(discord, nickname, false, effectiveNick, effectiveAvatarUrl, guildColor);
+            Account account = new Account(discord, nickname, false);
             Account.accounts.add(account);
 
             i++;
