@@ -1,6 +1,7 @@
 discordBotToken: "ENTER DISCORD BOT TOKEN HERE"
 accountsFilePath: "./plugins/OpenDiscordAuth/accounts.json"
 sessionExpiredDelay: 120
+discordChatIdForTranslation: "694088639696601088"
 
 codeCreator:
   ExpiredDelay: 43
@@ -28,3 +29,7 @@ message:
   AccountCreatingConfirming: "Подтвердите привязку аккаунта $discord к вашему нику($nickname). Напишие в чат &a'confirm' - для подтверждения&r, &c'cancel' - для отмены&r."
   AuthorizationTimeout: "Время авторизации вышло."
   PlayerKickPluginDisabled: "Вас выгнали, потому что плагин авторизации отключен, и вы не вошли в систему."
+  CommandMissingPermissions: "У вас недостаточно прав"
+  CommandSuccess: "Команда исполнена"
+  CommandError: "Ошибка"
+  GlobalMessageFormat: '&7[&bG&7] [&3discord&7] &%color%displayname &9> &7%message'

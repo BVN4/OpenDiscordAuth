@@ -1,5 +1,6 @@
 package ru.fazziclay.opendiscordauth;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -166,6 +169,43 @@ public class Utils {
             }
         }
     }
+
+    public static String truncate(String str, int length) {
+        if (str.length() <= length) {
+            return str;
+        } else {
+            return str.substring(0, length-1) + "…";
+        }
+    }
+
+//    public static String convertDiscordMentions(String str){
+//        Pattern pattern = Pattern.compile("<([\\w\\S]*)>", Pattern.MULTILINE);
+//        str = str.replace("@!", "@");
+//
+//        Matcher matcher = pattern.matcher(str);
+//
+//        while (matcher.find()) {
+//            String match = matcher.group(1);
+//            if (match.startsWith("@")){
+//                str = str.replace(matcher.group(0),
+//                    "@" + Objects.requireNonNull(Objects.requireNonNull(DiscordBot.bot
+//                        .getGuildChannelById(Config.discordChatIdForTranslation))
+//                            .getGuild().getMemberById(match.substring(1))).getEffectiveName());
+//            } else if (match.startsWith("#")) {
+//                str = str.replace(matcher.group(0),
+//                    "@" + Objects.requireNonNull(DiscordBot.bot
+//                        .getGuildChannelById(match.substring(1))).getName());
+//            } else {
+//                str = str.replace(matcher.group(0), "<>");
+//            }
+//        }
+//
+//        return str;
+//    }
+
+    public static String getMemberHexColor(Member member){
+        return "#"+Integer.toHexString(Objects.requireNonNull(Objects.requireNonNull(member).getColor()).getRGB()).substring(2);
+    };
 
     public static boolean isFileExist(String path) {
         File file = new File(path);

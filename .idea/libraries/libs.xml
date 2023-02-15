@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/libs/json-20201115.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/JDA-4.4.0_350-withDependencies.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/chatex.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

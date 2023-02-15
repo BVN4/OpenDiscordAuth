@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -20,7 +21,11 @@ public class LoginManager {
 
         Player player = Bukkit.getPlayer(UUID.fromString(uuid));
         assert player != null;
-        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> player.setGameMode(GameMode.SURVIVAL));
+        Account account = Account.getByValue(0, player.getName());
+        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+            player.setGameMode(GameMode.SURVIVAL);
+            player.setDisplayName(ChatColor.COLOR_CHAR + "#c22222" + account.effectiveNick);
+        });
 
         Utils.sendMessage(player, Config.messageSuccessfulAuthorization);
     }
