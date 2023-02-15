@@ -1,7 +1,7 @@
 discordBotToken: "ENTER DISCORD BOT TOKEN HERE"
 accountsFilePath: "./plugins/OpenDiscordAuth/accounts.json"
 sessionExpiredDelay: 120
-discordChatIdForTranslation: "694088639696601088"
+discordChatIdForTranslation: "ENTER CHAT ID HERE"
 
 codeCreator:
   ExpiredDelay: 43

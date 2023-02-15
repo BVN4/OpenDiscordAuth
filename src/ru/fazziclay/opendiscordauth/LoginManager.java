@@ -14,61 +14,62 @@ import java.util.List;
 import java.util.UUID;
 
 public class LoginManager {
-    public static List<String> notAuthorizedPlayers = new ArrayList<>();
+	public static List<String> notAuthorizedPlayers = new ArrayList<>();
 
-    public static void login(String uuid) {
-        LoginManager.notAuthorizedPlayers.remove(uuid);
+	public static void login(String uuid) {
+		LoginManager.notAuthorizedPlayers.remove(uuid);
 
-        Player player = Bukkit.getPlayer(UUID.fromString(uuid));
-        assert player != null;
-        Account account = Account.getByValue(0, player.getName());
-        Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-            player.setGameMode(GameMode.SURVIVAL);
-            player.setDisplayName(ChatColor.COLOR_CHAR + "#c22222" + account.effectiveNick);
-        });
+		Player player = Bukkit.getPlayer(UUID.fromString(uuid));
+		Account account = Account.getByValue(0, player.getName());
+		assert account != null;
 
-        Utils.sendMessage(player, Config.messageSuccessfulAuthorization);
-    }
+		Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+			player.setGameMode(GameMode.SURVIVAL);
+			player.setDisplayName(ChatColor.COLOR_CHAR + account.guildColor + account.effectiveNick);
+		});
 
-    public static void kickAllNotAuthorizedPlayers() {
-        int i = 0;
-        while (i < notAuthorizedPlayers.size()) {
-            Player player = Bukkit.getPlayer(UUID.fromString(notAuthorizedPlayers.get(i)));
-            Utils.kickPlayer(player, Config.messagePlayerKickPluginDisabled);
-            i++;
-        }
-    }
+		Utils.sendMessage(player, Config.messageSuccessfulAuthorization);
+	}
 
-    public static boolean isAuthorized(String uuid) {
-        return (!notAuthorizedPlayers.contains(uuid));
-    }
+	public static void kickAllNotAuthorizedPlayers() {
+		int i = 0;
+		while (i < notAuthorizedPlayers.size()) {
+			Player player = Bukkit.getPlayer(UUID.fromString(notAuthorizedPlayers.get(i)));
+			Utils.kickPlayer(player, Config.messagePlayerKickPluginDisabled);
+			i++;
+		}
+	}
 
-    public static void giveCode(String uuid, String nickname, Player player) {
-        Utils.debug("[LoginManager] giveCode(...)");
+	public static boolean isAuthorized(String uuid) {
+		return (!notAuthorizedPlayers.contains(uuid));
+	}
 
-        String codeContent = TempCode.create(uuid, nickname);
-        if (codeContent == null) {
-            Utils.kickPlayer(player, Config.messageNotFreeTempCodeError);
-            return;
-        }
+	public static void giveCode(String uuid, String nickname, Player player) {
+		Utils.debug("[LoginManager] giveCode(...)");
 
-        // -------------
-        String b = Config.messageGiveTempCode.replace("$code", codeContent).replace("&", "§");
-        TextComponent text = new TextComponent(b);
+		String codeContent = TempCode.create(uuid, nickname);
+		if (codeContent == null) {
+			Utils.kickPlayer(player, Config.messageNotFreeTempCodeError);
+			return;
+		}
 
-        if (Config.giveTempCodeEventsIsHoverEvent) {
-            text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Config.giveTempCodeEventsHoverText.replace("&", "§").replace("$code", codeContent)).create()));
-        }
+		// -------------
+		String b = Config.messageGiveTempCode.replace("$code", codeContent).replace("&", "§");
+		TextComponent text = new TextComponent(b);
 
-        if (Config.giveTempCodeEventsIsClickEvent) {
-            if (Config.giveTempCodeEventsClickMode == 0) {
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, codeContent));
+		if (Config.giveTempCodeEventsIsHoverEvent) {
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Config.giveTempCodeEventsHoverText.replace("&", "§").replace("$code", codeContent)).create()));
+		}
 
-            } else if (Config.giveTempCodeEventsClickMode == 1) {
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, codeContent));
-            }
-        }
+		if (Config.giveTempCodeEventsIsClickEvent) {
+			if (Config.giveTempCodeEventsClickMode == 0) {
+				text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, codeContent));
 
-        player.spigot().sendMessage(text);
-    }
+			} else if (Config.giveTempCodeEventsClickMode == 1) {
+				text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, codeContent));
+			}
+		}
+
+		player.spigot().sendMessage(text);
+	}
 }

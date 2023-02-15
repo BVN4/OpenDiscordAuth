@@ -6,130 +6,131 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Color;
 
 
 public class Account {
 
-    // Static
-    public static List<Account> accounts = new ArrayList<>();
-    public static JSONArray     accountsJson = new JSONArray();
+	// Static
+	public static List<Account> accounts = new ArrayList<>();
+	public static JSONArray     accountsJson = new JSONArray();
 
 
-    public static void makePermanent(Account account) {
-        Utils.debug("[Account] makePermanent()");
+	public static void makePermanent(Account account) {
+		Utils.debug("[Account] makePermanent()");
 
-        if (account.temp) {
-            account.temp = false;
+		if (account.temp) {
+			account.temp = false;
 
-            // add
-            Account.accountsJson.put(new JSONObject(
-                "{'discord': '"+account.ownerDiscord+"',"
-                + " 'nickname': '"+account.ownerNickname+"',"
-                + " 'effectiveNick': '"+account.effectiveNick+"',"
-                + " 'effectiveAvatarUrl': '"+account.effectiveAvatarUrl+"',"
-                + " 'guildColor': '"+account.guildColor+"'"
-                + "}"
-            ));
-            Utils.writeFile(Config.accountsFilePath, accountsJson.toString(4));
-            // add
-        }
-    }
+			// add
+			JSONObject jsonAccount = new JSONObject();
+			jsonAccount.put("discord", account.ownerDiscord);
+			jsonAccount.put("nickname", account.ownerNickname);
+			jsonAccount.put("effectiveNick", account.effectiveNick);
+			jsonAccount.put("effectiveAvatarUrl", account.effectiveAvatarUrl);
+			jsonAccount.put("guildColor", account.guildColor);
 
-    public static void delete(Account account) {
-        Utils.debug("[Account] delete()");
+			Account.accountsJson.put(jsonAccount);
 
-        // remove
-        Account.accounts.remove(account);
-        int i=0;
-        while (i < accountsJson.length()) {
-            JSONObject a = Account.accountsJson.getJSONObject(i);
-            if ( (a.getString("discord").equals(account.ownerDiscord)) && (a.getString("nickname").equals(account.ownerNickname)) ) {
-                Account.accountsJson.remove(i);
-                break;
-            }
+			Utils.writeFile(Config.accountsFilePath, accountsJson.toString(4));
+			// add
+		}
+	}
 
-            i++;
-        }
-        // remove
-    }
+	public static void delete(Account account) {
+		Utils.debug("[Account] delete()");
 
-    public static void create(Member ownerDiscord, String ownerNickname) {
-        Utils.debug("[Account] create()");
+		// remove
+		Account.accounts.remove(account);
+		int i=0;
+		while (i < accountsJson.length()) {
+			JSONObject a = Account.accountsJson.getJSONObject(i);
+			if ( (a.getString("discord").equals(account.ownerDiscord)) && (a.getString("nickname").equals(account.ownerNickname)) ) {
+				Account.accountsJson.remove(i);
+				break;
+			}
 
-        String discordNickname = ownerDiscord.getUser().getAsTag();
-        Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
+			i++;
+		}
+		// remove
+	}
 
-        Account account = new Account(
-                ownerDiscord.getId(),
-                ownerNickname,
-                true,
-                ownerDiscord.getEffectiveName(),
-                ownerDiscord.getEffectiveAvatarUrl(),
-                Utils.getMemberHexColor(ownerDiscord));
+	public static void create(Member ownerDiscord, String ownerNickname) {
+		Utils.debug("[Account] create()");
 
-        Account.accounts.add(account);
-    }
+		String discordNickname = ownerDiscord.getUser().getAsTag();
+		Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
 
-    public static Account getByValue(int type, Object value) {
-        Utils.debug("[Account] getByValue("+type+", "+value+")");
+		Account account = new Account(
+				ownerDiscord.getId(),
+				ownerNickname,
+				true,
+				ownerDiscord.getEffectiveName(),
+				ownerDiscord.getEffectiveAvatarUrl(),
+				Utils.getMemberHexColor(ownerDiscord)
+		);
 
-        int i = 0;
-        while (i < accounts.size()) {
-            Account currentAccount = accounts.get(i);
+		Account.accounts.add(account);
+	}
 
-            if (type == 0 && currentAccount.ownerNickname.equals(value)) {
-                Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
-                return currentAccount;
-            }
+	public static Account getByValue(int type, Object value) {
+		Utils.debug("[Account] getByValue("+type+", "+value+")");
 
-            if (type == 2 && currentAccount.ownerDiscord.equals(value)) {
-                Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
-                return currentAccount;
-            }
+		int i = 0;
+		while (i < accounts.size()) {
+			Account currentAccount = accounts.get(i);
 
-            if (type == 3 && currentAccount.temp == (boolean) value) {
-                Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
-                return currentAccount;
-            }
+			if (type == 0 && currentAccount.ownerNickname.equals(value)) {
+				Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
+				return currentAccount;
+			}
 
+			if (type == 2 && currentAccount.ownerDiscord.equals(value)) {
+				Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
+				return currentAccount;
+			}
 
-            i++;
-        }
-
-        Utils.debug("[Account] getByValue("+type+", "+value+"): returned 'null'");
-        return null;
-    }
+			if (type == 3 && currentAccount.temp == (boolean) value) {
+				Utils.debug("[Account] getByValue("+type+", "+value+"): returned '"+currentAccount+"'");
+				return currentAccount;
+			}
 
 
-    //Not-static
-    public String ownerDiscord;
-    public String ownerNickname;
-    public boolean temp;
-    public String effectiveNick;
-    public String effectiveAvatarUrl;
-    public String guildColor;
+			i++;
+		}
 
-    public void makePermanent() {
-        Utils.debug("[Account] [object] makePermanent()");
-        Account.makePermanent(this);
-    }
-
-    public void delete() {
-        Utils.debug("[Account] [object] delete()");
-        Account.delete(this);
-    }
+		Utils.debug("[Account] getByValue("+type+", "+value+"): returned 'null'");
+		return null;
+	}
 
 
-    // Constructor
-    public Account(String ownerDiscord, String ownerNickname, boolean temp, String guildNick, String effectiveAvatarUrl, String nickColor) {
-        Utils.debug("[Account] -> created new object: (ownerDiscord="+ownerDiscord+"; ownerNickname="+ownerNickname+"; temp="+temp+")");
+	//Not-static
+	public String ownerDiscord;
+	public String ownerNickname;
+	public boolean temp;
+	public String effectiveNick;
+	public String effectiveAvatarUrl;
+	public String guildColor;
 
-        this.ownerDiscord = ownerDiscord;
-        this.ownerNickname = ownerNickname;
-        this.temp = temp;
-        this.effectiveNick = guildNick;
-        this.effectiveAvatarUrl = effectiveAvatarUrl;
-        this.guildColor = nickColor;
-    }
+	public void makePermanent() {
+		Utils.debug("[Account] [object] makePermanent()");
+		Account.makePermanent(this);
+	}
+
+	public void delete() {
+		Utils.debug("[Account] [object] delete()");
+		Account.delete(this);
+	}
+
+
+	// Constructor
+	public Account(String ownerDiscord, String ownerNickname, boolean temp, String guildNick, String effectiveAvatarUrl, String nickColor) {
+		Utils.debug("[Account] -> created new object: (ownerDiscord="+ownerDiscord+"; ownerNickname="+ownerNickname+"; temp="+temp+")");
+
+		this.ownerDiscord = ownerDiscord;
+		this.ownerNickname = ownerNickname;
+		this.temp = temp;
+		this.effectiveNick = guildNick;
+		this.effectiveAvatarUrl = effectiveAvatarUrl;
+		this.guildColor = nickColor;
+	}
 }
