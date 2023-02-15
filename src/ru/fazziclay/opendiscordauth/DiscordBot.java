@@ -41,7 +41,8 @@ public class DiscordBot extends ListenerAdapter {
                         .replace("&", "§")
                         .replace("%color", Utils.getMemberHexColor(member))
                         .replace("%displayname", member.getEffectiveName())
-                        .replace("%message", event.getMessage().getContentDisplay()), 256));
+                        .replace("%message", event.getMessage().getContentDisplay()), 256)
+                );
             }
             return;
         }
@@ -64,10 +65,11 @@ public class DiscordBot extends ListenerAdapter {
             } else {
                 Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == false");
                 Account.create(
-                    Objects.requireNonNull(
-                            DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation)
-                        )
-                        .getGuild().retrieveMember(author).complete(), tempCode.ownerNickname
+                    Objects.requireNonNull(DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation))
+                        .getGuild()
+                        .retrieveMember(author)
+                        .complete(),
+                    tempCode.ownerNickname
                 );
             }
 
