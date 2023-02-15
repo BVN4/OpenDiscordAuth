@@ -17,119 +17,119 @@ import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
 
-	public static JDA bot;
-	public static WebhookClient webhook;
+    public static JDA bot;
+    public static WebhookClient webhook;
 
-	@Override
-	public void onMessageReceived(MessageReceivedEvent event) {
-		Utils.debug("[DiscordBot] onMessageReceived(): message="+event.getMessage().getContentRaw()+"");
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        Utils.debug("[DiscordBot] onMessageReceived(): message="+event.getMessage().getContentRaw()+"");
 
-		String content           = event.getMessage().getContentRaw();
-		User author              = event.getMessage().getAuthor();
-		MessageChannel channel   = event.getMessage().getChannel();
-		Member member = event.getMessage().getMember();
+        String content           = event.getMessage().getContentRaw();
+        User author              = event.getMessage().getAuthor();
+        MessageChannel channel   = event.getMessage().getChannel();
+        Member member = event.getMessage().getMember();
 
-		if (author.isBot()) {
-			return;
-		}
+        if (author.isBot()) {
+            return;
+        }
 
-		//Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
-		if (channel.getType().isGuild()) {
-			if (channel.getId().equals(Config.discordChatIdForTranslation)) {
-				Bukkit.broadcastMessage(Utils.truncate(
-					Config.globalMessageFormat
-						.replace("&", "§")
-						.replace("%color", Utils.getMemberHexColor(member))
-						.replace("%displayname", member.getEffectiveName())
-						.replace("%message", event.getMessage().getContentDisplay()), 256));
-			}
-			return;
-		}
+        //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
+        if (channel.getType().isGuild()) {
+            if (channel.getId().equals(Config.discordChatIdForTranslation)) {
+                Bukkit.broadcastMessage(Utils.truncate(
+                    Config.globalMessageFormat
+                        .replace("&", "§")
+                        .replace("%color", Utils.getMemberHexColor(member))
+                        .replace("%displayname", member.getEffectiveName())
+                        .replace("%message", event.getMessage().getContentDisplay()), 256));
+            }
+            return;
+        }
 
-		TempCode tempCode = TempCode.getByValue(0, content);
-		Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode="+tempCode);
+        TempCode tempCode = TempCode.getByValue(0, content);
+        Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode="+tempCode);
 
-		if (tempCode != null) {
-			Account account = Account.getByValue(0, tempCode.ownerNickname);
+        if (tempCode != null) {
+            Account account = Account.getByValue(0, tempCode.ownerNickname);
 
-			if (account != null) {
-				Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == true");
-				if (account.ownerDiscord.equals(author.getId())) {
-					LoginManager.login(tempCode.ownerUUID);
+            if (account != null) {
+                Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == true");
+                if (account.ownerDiscord.equals(author.getId())) {
+                    LoginManager.login(tempCode.ownerUUID);
 
-				} else {
-					Utils.sendMessage(channel, Config.messageNotYoursCode);
-				}
+                } else {
+                    Utils.sendMessage(channel, Config.messageNotYoursCode);
+                }
 
-			} else {
-				Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == false");
-				Account.create(
-					Objects.requireNonNull(
-						DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation)
-					)
-					.getGuild().retrieveMember(author).complete(), tempCode.ownerNickname
-				);
-			}
+            } else {
+                Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == false");
+                Account.create(
+                    Objects.requireNonNull(
+                            DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation)
+                        )
+                        .getGuild().retrieveMember(author).complete(), tempCode.ownerNickname
+                );
+            }
 
-			tempCode.delete();
+            tempCode.delete();
 
-		} else {
-			Utils.sendMessage(channel, Config.messageCodeNotFound);
-		}
-	}
+        } else {
+            Utils.sendMessage(channel, Config.messageCodeNotFound);
+        }
+    }
 
-	@Override
-	public void onSlashCommand(@NotNull SlashCommandEvent event) {
-		MyCommandSender sender = new MyCommandSender(event);
-		String command = Objects.requireNonNull(event.getOption("command")).getAsString();
-		Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
-		if (event.getName().equals("rc")) {
-			if (!event.getUser().getId().equals("256114365894230018")) {
-				event.reply(Config.messageCommandMissingPermissions).queue();
-				return;
-			}
-			event.deferReply().queue();
+    @Override
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+        MyCommandSender sender = new MyCommandSender(event);
+        String command = Objects.requireNonNull(event.getOption("command")).getAsString();
+        Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
+        if (event.getName().equals("rc")) {
+            if (!event.getUser().getId().equals("256114365894230018")) {
+                event.reply(Config.messageCommandMissingPermissions).queue();
+                return;
+            }
+            event.deferReply().queue();
 
-			// Обработка команды и добавление её задачи в планировщик основного потока
-			Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-				try {
-					boolean status = Bukkit.dispatchCommand(sender, command);
-					event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
-				} catch (CommandException e) {
-					event.getHook().editOriginal(
-						e.getMessage()
-							+ "\n" + e.getCause()
-							+ "\n" + Arrays.toString(e.getSuppressed())
-							+ "\n" + e.getClass()
-							+ "\n" + Arrays.toString(e.getStackTrace())
-					).queue();
-				}
-			});
-		}
-	}
-	@Override
-	public void onReady(@NotNull ReadyEvent event) {
-		DiscordBot.updateOnlineStatus();
-		TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
+            // Обработка команды и добавление её задачи в планировщик основного потока
+            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
+                try {
+                    boolean status = Bukkit.dispatchCommand(sender, command);
+                    event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
+                } catch (CommandException e) {
+                    event.getHook().editOriginal(
+                        e.getMessage()
+                            + "\n" + e.getCause()
+                            + "\n" + Arrays.toString(e.getSuppressed())
+                            + "\n" + e.getClass()
+                            + "\n" + Arrays.toString(e.getStackTrace())
+                    ).queue();
+                }
+            });
+        }
+    }
+    @Override
+    public void onReady(@NotNull ReadyEvent event) {
+        DiscordBot.updateOnlineStatus();
+        TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
 
-		Webhook w = null;
+        Webhook w = null;
 
-		for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
-			if (webhook.getName().equals("minecraftTranslator")) {
-				w = webhook;
-			}
-		};
+        for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
+            if (webhook.getName().equals("minecraftTranslator")) {
+                w = webhook;
+            }
+        };
 
-		if (w == null) {
-			w = channel.createWebhook("minecraftTranslator").complete();
-		}
-		DiscordBot.webhook = new WebhookClient(w);
-	}
+        if (w == null) {
+            w = channel.createWebhook("minecraftTranslator").complete();
+        }
+        DiscordBot.webhook = new WebhookClient(w);
+    }
 
-	public static void updateOnlineStatus() {
-		DiscordBot.bot.getPresence().setActivity(
-				Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
-		);
-	}
+    public static void updateOnlineStatus() {
+        DiscordBot.bot.getPresence().setActivity(
+            Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+        );
+    }
 
 }
