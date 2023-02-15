@@ -22,18 +22,9 @@ public class Account {
         if (account.temp) {
             account.temp = false;
 
-            // add
-            JSONObject jsonAccount = new JSONObject();
-            jsonAccount.put("discord", account.ownerDiscord);
-            jsonAccount.put("nickname", account.ownerNickname);
-            jsonAccount.put("effectiveNick", account.effectiveNick);
-            jsonAccount.put("effectiveAvatarUrl", account.effectiveAvatarUrl);
-            jsonAccount.put("guildColor", account.guildColor);
-
-            Account.accountsJson.put(jsonAccount);
+            Account.accountsJson.put(Account.toJSON(account));
 
             Utils.writeFile(Config.accountsFilePath, accountsJson.toString(4));
-            // add
         }
     }
 
@@ -132,6 +123,40 @@ public class Account {
         }
     }
 
+    public Account update(Member member) {
+
+        this.effectiveNick = member.getEffectiveName();
+        this.effectiveAvatarUrl = member.getEffectiveName();
+        this.guildColor = Utils.getMemberHexColor(member);
+
+        int i = 0;
+
+        while (i < Account.accountsJson.length()) {
+            if (Account.accountsJson.getJSONObject(i).getString("discord").equals(member.getId())) break;
+        }
+
+        Account.accountsJson.put(i ,this.toJSON());
+
+        return this;
+    }
+
+    public Account update() {
+        return this.update(DiscordBot.getMember(this.ownerDiscord));
+    }
+
+    public static JSONObject toJSON(Account account) {
+        JSONObject jsonAccount = new JSONObject();
+        jsonAccount.put("discord", account.ownerDiscord);
+        jsonAccount.put("nickname", account.ownerNickname);
+        jsonAccount.put("effectiveNick", account.effectiveNick);
+        jsonAccount.put("effectiveAvatarUrl", account.effectiveAvatarUrl);
+        jsonAccount.put("guildColor", account.guildColor);
+        return jsonAccount;
+    }
+
+    public JSONObject toJSON() {
+        return Account.toJSON(this);
+    }
 
     // Constructor
     public Account(String ownerDiscord, String ownerNickname, boolean temp, String guildNick, String effectiveAvatarUrl, String nickColor) {

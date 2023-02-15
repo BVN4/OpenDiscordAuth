@@ -23,6 +23,8 @@ public class LoginManager {
         Account account = Account.getByValue(0, player.getName());
         assert account != null;
 
+        account.update();
+
         Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
             player.setGameMode(GameMode.SURVIVAL);
             player.setDisplayName(ChatColor.COLOR_CHAR + account.guildColor + account.effectiveNick);
