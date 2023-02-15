@@ -13,6 +13,7 @@ public class Account {
     // Static
     public static List<Account> accounts = new ArrayList<>();
     public static JSONArray     accountsJson = new JSONArray();
+    public static boolean       accountsForceRewrite = false;
 
 
     public static void makePermanent(Account account) {
@@ -119,6 +120,16 @@ public class Account {
     public void delete() {
         Utils.debug("[Account] [object] delete()");
         Account.delete(this);
+    }
+
+    public static void rewriteAccounts() {
+        int i = 0;
+        Account.accountsJson = new JSONArray();
+        while (i < Account.accounts.size()) {
+            Account account = Account.accounts.get(i);
+            account.temp = true;
+            Account.makePermanent(account);
+        }
     }
 
 

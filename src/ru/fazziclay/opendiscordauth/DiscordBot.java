@@ -137,4 +137,8 @@ public class DiscordBot extends ListenerAdapter {
         );
     }
 
+    public static Member getMember(String id) {
+        return DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation).getGuild().getMemberById(id);
+    }
+
 }

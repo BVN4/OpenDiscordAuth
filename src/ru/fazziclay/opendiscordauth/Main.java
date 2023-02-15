@@ -93,14 +93,33 @@ public class Main extends JavaPlugin {
         while (i < Account.accountsJson.length()) {
             String discord  = Account.accountsJson.getJSONObject(i).getString("discord");
             String nickname = Account.accountsJson.getJSONObject(i).getString("nickname");
-            String effectiveNick = Account.accountsJson.getJSONObject(i).getString("effectiveNick");
-            String effectiveAvatarUrl = Account.accountsJson.getJSONObject(i).getString("effectiveAvatarUrl");
-            String guildColor = Account.accountsJson.getJSONObject(i).getString("guildColor");
+
+            if (!Account.accountsJson.getJSONObject(i).has("effectiveNick")) Account.accountsForceRewrite = true;
+
+            String effectiveNick =
+                Account.accountsJson.getJSONObject(i).has("effectiveNick")
+                ? Account.accountsJson.getJSONObject(i).getString("effectiveNick")
+                : DiscordBot.getMember(discord).getEffectiveName();
+
+            String effectiveAvatarUrl =
+                Account.accountsJson.getJSONObject(i).has("effectiveAvatarUrl")
+                ? Account.accountsJson.getJSONObject(i).getString("effectiveAvatarUrl")
+                : DiscordBot.getMember(discord).getEffectiveAvatarUrl();
+
+            String guildColor =
+                Account.accountsJson.getJSONObject(i).has("guildColor")
+                ? Account.accountsJson.getJSONObject(i).getString("guildColor")
+                : Utils.getMemberHexColor(DiscordBot.getMember(discord));
 
             Account account = new Account(discord, nickname, false, effectiveNick, effectiveAvatarUrl, guildColor);
             Account.accounts.add(account);
 
             i++;
         }
+
+        if (Account.accountsForceRewrite) {
+            Account.rewriteAccounts();
+        }
+
     }
 }
