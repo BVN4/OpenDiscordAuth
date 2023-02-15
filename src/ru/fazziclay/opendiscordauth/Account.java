@@ -113,10 +113,11 @@ public class Account {
 
     public static void addMemberData(Account account) {
         Member member = DiscordBot.getMember(account.ownerDiscord);
-
+        int i = Account.accounts.indexOf(account);
         account.effectiveNick = member.getEffectiveName();
-        account.effectiveAvatarUrl = member.getEffectiveName();
+        account.effectiveAvatarUrl = member.getEffectiveAvatarUrl();
         account.guildColor = Utils.getMemberHexColor(member);
+        Account.accounts.set(i, account);
     }
 
     public static JSONObject toJSON(Account account) {
@@ -128,6 +129,15 @@ public class Account {
 
     public JSONObject toJSON() {
         return Account.toJSON(this);
+    }
+
+    @Override
+    public String toString() {
+        return this.ownerDiscord + " "
+            + this.ownerNickname + " "
+            + this.effectiveNick + " "
+            + this.effectiveAvatarUrl + " "
+            + this.guildColor;
     }
 
     // Constructor
