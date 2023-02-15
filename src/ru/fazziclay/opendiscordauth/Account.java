@@ -1,12 +1,11 @@
 package ru.fazziclay.opendiscordauth;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 public class Account {
@@ -23,7 +22,15 @@ public class Account {
             account.temp = false;
 
             // add
-            Account.accountsJson.put(new JSONObject("{'discord': '"+account.ownerDiscord+"', 'nickname': '"+account.ownerNickname+"'}"));
+            JSONObject jsonAccount = new JSONObject();
+            jsonAccount.put("discord", account.ownerDiscord);
+            jsonAccount.put("nickname", account.ownerNickname);
+            jsonAccount.put("effectiveNick", account.effectiveNick);
+            jsonAccount.put("effectiveAvatarUrl", account.effectiveAvatarUrl);
+            jsonAccount.put("guildColor", account.guildColor);
+
+            Account.accountsJson.put(jsonAccount);
+
             Utils.writeFile(Config.accountsFilePath, accountsJson.toString(4));
             // add
         }
@@ -47,12 +54,20 @@ public class Account {
         // remove
     }
 
-    public static void create(User ownerDiscord, String ownerNickname) {
+    public static void create(Member ownerDiscord, String ownerNickname) {
         Utils.debug("[Account] create()");
 
-        String discordNickname = ownerDiscord.getName() + "#" + ownerDiscord.getDiscriminator();
+        String discordNickname = ownerDiscord.getUser().getAsTag();
         Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
-        Account account = new Account(ownerDiscord.getId(), ownerNickname, true);
+
+        Account account = new Account(
+            ownerDiscord.getId(),
+            ownerNickname,
+            true,
+            ownerDiscord.getEffectiveName(),
+            ownerDiscord.getEffectiveAvatarUrl(),
+            Utils.getMemberHexColor(ownerDiscord)
+        );
 
         Account.accounts.add(account);
     }
@@ -92,6 +107,9 @@ public class Account {
     public String ownerDiscord;
     public String ownerNickname;
     public boolean temp;
+    public String effectiveNick;
+    public String effectiveAvatarUrl;
+    public String guildColor;
 
     public void makePermanent() {
         Utils.debug("[Account] [object] makePermanent()");
@@ -105,11 +123,14 @@ public class Account {
 
 
     // Constructor
-    public Account(String ownerDiscord, String ownerNickname, boolean temp) {
+    public Account(String ownerDiscord, String ownerNickname, boolean temp, String guildNick, String effectiveAvatarUrl, String nickColor) {
         Utils.debug("[Account] -> created new object: (ownerDiscord="+ownerDiscord+"; ownerNickname="+ownerNickname+"; temp="+temp+")");
 
         this.ownerDiscord = ownerDiscord;
         this.ownerNickname = ownerNickname;
         this.temp = temp;
+        this.effectiveNick = guildNick;
+        this.effectiveAvatarUrl = effectiveAvatarUrl;
+        this.guildColor = nickColor;
     }
 }

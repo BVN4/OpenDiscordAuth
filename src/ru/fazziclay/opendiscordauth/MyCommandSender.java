@@ -130,22 +130,22 @@ public class MyCommandSender implements RemoteConsoleCommandSender {
 
     private String formatMessage(String msg) {
         return "```ansi\n" + msg
-                .replace("§0", "\u001B[0;30m")
-                .replace("§1", "\u001B[0;34m")
-                .replace("§2", "\u001B[0;32m")
-                .replace("§3", "\u001B[0;36m")
-                .replace("§4", "\u001B[0;31m")
-                .replace("§5", "\u001B[0;35m")
-                .replace("§6", "\u001B[0;33m")
-                .replace("§7", "\u001B[0;37m")
-                .replace("§8", "\u001B[0;90m")
-                .replace("§9", "\u001B[0;94m")
-                .replace("§a", "\u001B[0;92m")
-                .replace("§b", "\u001B[0;96m")
-                .replace("§c", "\u001B[0;91m")
-                .replace("§d", "\u001B[0;95m")
-                .replace("§e", "\u001B[0;93m")
-                .replace("§f", "\u001B[0;97m")
-                + "```";
+            .replace("§0", "\u001B[0;30m")
+            .replace("§1", "\u001B[0;34m")
+            .replace("§2", "\u001B[0;32m")
+            .replace("§3", "\u001B[0;36m")
+            .replace("§4", "\u001B[0;31m")
+            .replace("§5", "\u001B[0;35m")
+            .replace("§6", "\u001B[0;33m")
+            .replace("§7", "\u001B[0;37m")
+            .replace("§8", "\u001B[0;90m")
+            .replace("§9", "\u001B[0;94m")
+            .replace("§a", "\u001B[0;92m")
+            .replace("§b", "\u001B[0;96m")
+            .replace("§c", "\u001B[0;91m")
+            .replace("§d", "\u001B[0;95m")
+            .replace("§e", "\u001B[0;93m")
+            .replace("§f", "\u001B[0;97m")
+            + "```";
     }
 }

@@ -1,9 +1,7 @@
 package ru.fazziclay.opendiscordauth;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -20,6 +18,7 @@ import java.util.Objects;
 public class DiscordBot extends ListenerAdapter {
 
     public static JDA bot;
+    public static WebhookClient webhook;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -28,8 +27,26 @@ public class DiscordBot extends ListenerAdapter {
         String content           = event.getMessage().getContentRaw();
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
+        Member member = event.getMessage().getMember();
 
-        if (channel.getType().isGuild() || author.getId().equals(bot.getSelfUser().getId())) {
+        if (author.isBot()) {
+            return;
+        }
+
+        //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
+        if (channel.getType().isGuild()) {
+            if (channel.getId().equals(Config.discordChatIdForTranslation)) {
+                Bukkit.broadcastMessage(
+                    Utils.truncate(
+                        Config.globalMessageFormat
+                            .replace("&", "§")
+                            .replace("%color", Utils.getMemberHexColor(member))
+                            .replace("%displayname", member.getEffectiveName())
+                            .replace("%message", event.getMessage().getContentDisplay()),
+                        256
+                    )
+                );
+            }
             return;
         }
 
@@ -50,7 +67,13 @@ public class DiscordBot extends ListenerAdapter {
 
             } else {
                 Utils.debug("[DiscordBot] onMessageReceived(): (account != null) == false");
-                Account.create(author, tempCode.ownerNickname);
+                Account.create(
+                    Objects.requireNonNull(DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation))
+                        .getGuild()
+                        .retrieveMember(author)
+                        .complete(),
+                    tempCode.ownerNickname
+                );
             }
 
             tempCode.delete();
@@ -66,15 +89,17 @@ public class DiscordBot extends ListenerAdapter {
         String command = Objects.requireNonNull(event.getOption("command")).getAsString();
         Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
-            if(!event.getUser().getId().equals("256114365894230018")) {
-                event.reply("У вас недостаточно прав").queue();
+            if (!event.getUser().getId().equals("256114365894230018")) {
+                event.reply(Config.messageCommandMissingPermissions).queue();
                 return;
             }
             event.deferReply().queue();
+
+            // Обработка команды и добавление её задачи в планировщик основного потока
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                 try {
                     boolean status = Bukkit.dispatchCommand(sender, command);
-                    event.getHook().editOriginal(status ? "Команда исполнена" : "Ошибка").queue();
+                    event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
                 } catch (CommandException e) {
                     event.getHook().editOriginal(
                         e.getMessage()
@@ -90,6 +115,20 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         DiscordBot.updateOnlineStatus();
+        TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
+
+        Webhook w = null;
+
+        for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
+            if (webhook.getName().equals("minecraftTranslator")) {
+                w = webhook;
+            }
+        };
+
+        if (w == null) {
+            w = channel.createWebhook("minecraftTranslator").complete();
+        }
+        DiscordBot.webhook = new WebhookClient(w);
     }
 
     public static void updateOnlineStatus() {

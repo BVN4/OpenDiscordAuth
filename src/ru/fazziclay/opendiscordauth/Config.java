@@ -30,4 +30,10 @@ public class Config {
     public static String messageAccountCreatingConfirming = Main.pluginConfig.getString("message.AccountCreatingConfirming");
     public static String messageAuthorizationTimeout = Main.pluginConfig.getString("message.AuthorizationTimeout");
     public static String messagePlayerKickPluginDisabled = Main.pluginConfig.getString("message.PlayerKickPluginDisabled");
+    public static String discordChatIdForTranslation = Main.pluginConfig.getString("discordChatIdForTranslation");
+    public static String messageCommandMissingPermissions = Main.pluginConfig.getString("message.CommandMissingPermissions");
+    public static String messageCommandSuccess = Main.pluginConfig.getString("message.CommandSuccess");
+    public static String messageCommandError = Main.pluginConfig.getString("message.CommandError");
+
+    public static String globalMessageFormat = Main.pluginConfig.getString("message.GlobalMessageFormat");
 }

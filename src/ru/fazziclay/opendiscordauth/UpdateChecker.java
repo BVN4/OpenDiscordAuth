@@ -37,7 +37,7 @@ public class UpdateChecker {
             lastVersionDownloadURL = allJson.getJSONObject(0).getString("html_url");
 
             Utils.debug("[UpdateChecker] loadUpdateChecker(): last version: lastVersionTag="+lastVersionTag+"; lastVersionName"+lastVersionName+"; isLastVersionRelease"+isLastVersionRelease
-            +"; lastVersionDownloadURL="+lastVersionDownloadURL);
+                +"; lastVersionDownloadURL="+lastVersionDownloadURL);
 
             if (lastVersionTag > thisVersionTag) {
                 Utils.debug("[UpdateChecker] loadUpdateChecker(): update detected!");

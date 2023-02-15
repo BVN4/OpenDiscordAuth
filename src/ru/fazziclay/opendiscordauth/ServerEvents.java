@@ -1,15 +1,18 @@
 package ru.fazziclay.opendiscordauth;
 
-import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
+import de.jeter.chatex.api.events.PlayerUsesGlobalChatEvent;
+
+import java.util.Objects;
 
 public class ServerEvents implements Listener {
     @EventHandler
@@ -106,6 +109,19 @@ public class ServerEvents implements Listener {
 
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void PlayerUsesGlobalChatEvent (PlayerUsesGlobalChatEvent event) throws InterruptedException {
+        String message = event.getMessage();
+        Player player = event.getPlayer();
+        Account account = Objects.requireNonNull(Account.getByValue(0, player.getName()));
+
+        DiscordBot.webhook.sendMessage(
+            message,
+            account.effectiveNick,
+            account.effectiveAvatarUrl
+        );
     }
 
     @EventHandler

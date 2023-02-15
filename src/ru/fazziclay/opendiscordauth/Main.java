@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.awt.*;
+
 public class Main extends JavaPlugin {
 
     public static FileConfiguration pluginConfig;
@@ -71,12 +73,12 @@ public class Main extends JavaPlugin {
         Utils.debug("[Main] loadDiscordBot()");
 
         DiscordBot.bot = JDABuilder.createDefault(Config.discordBotToken)
-                .setChunkingFilter(ChunkingFilter.ALL)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .enableIntents(GatewayIntent.GUILD_PRESENCES)
-                .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .addEventListeners(new DiscordBot())
-                .build();
+            .setChunkingFilter(ChunkingFilter.ALL)
+            .setMemberCachePolicy(MemberCachePolicy.ALL)
+            .enableIntents(GatewayIntent.GUILD_PRESENCES)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .addEventListeners(new DiscordBot())
+            .build();
 
         DiscordBot.bot.awaitReady();
     }
@@ -91,8 +93,11 @@ public class Main extends JavaPlugin {
         while (i < Account.accountsJson.length()) {
             String discord  = Account.accountsJson.getJSONObject(i).getString("discord");
             String nickname = Account.accountsJson.getJSONObject(i).getString("nickname");
+            String effectiveNick = Account.accountsJson.getJSONObject(i).getString("effectiveNick");
+            String effectiveAvatarUrl = Account.accountsJson.getJSONObject(i).getString("effectiveAvatarUrl");
+            String guildColor = Account.accountsJson.getJSONObject(i).getString("guildColor");
 
-            Account account = new Account(discord, nickname, false);
+            Account account = new Account(discord, nickname, false, effectiveNick, effectiveAvatarUrl, guildColor);
             Account.accounts.add(account);
 
             i++;
