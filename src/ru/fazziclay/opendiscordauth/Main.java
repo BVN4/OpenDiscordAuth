@@ -12,8 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.awt.*;
+import org.json.JSONObject;
 
 public class Main extends JavaPlugin {
 
@@ -91,13 +90,11 @@ public class Main extends JavaPlugin {
 
         int i = 0;
         while (i < Account.accountsJson.length()) {
-            String discord  = Account.accountsJson.getJSONObject(i).getString("discord");
-            String nickname = Account.accountsJson.getJSONObject(i).getString("nickname");
-            String effectiveNick = Account.accountsJson.getJSONObject(i).getString("effectiveNick");
-            String effectiveAvatarUrl = Account.accountsJson.getJSONObject(i).getString("effectiveAvatarUrl");
-            String guildColor = Account.accountsJson.getJSONObject(i).getString("guildColor");
+            JSONObject accountJson = Account.accountsJson.getJSONObject(i);
+            String discord  = accountJson.getString("discord");
+            String nickname = accountJson.getString("nickname");
 
-            Account account = new Account(discord, nickname, false, effectiveNick, effectiveAvatarUrl, guildColor);
+            Account account = new Account(discord, nickname, false);
             Account.accounts.add(account);
 
             i++;
