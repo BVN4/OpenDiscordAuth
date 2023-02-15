@@ -113,7 +113,7 @@ public class Account {
     }
 
     public void update() {
-        Utils.debug("[Account] [object] delete()");
+        Utils.debug("[Account] [object] update()");
         Account.update(this);
     }
 
