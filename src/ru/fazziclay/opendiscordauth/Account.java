@@ -117,16 +117,6 @@ public class Account {
         Account.update(this);
     }
 
-    public static void rewriteAccounts() {
-        int i = 0;
-        Account.accountsJson = new JSONArray();
-        while (i < Account.accounts.size()) {
-            Account account = Account.accounts.get(i);
-            account.temp = true;
-            Account.makePermanent(account);
-        }
-    }
-
     public static void update(Account account) {
         Member member = DiscordBot.getMember(account.ownerDiscord);
 
