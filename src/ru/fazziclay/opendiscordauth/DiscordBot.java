@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 
@@ -44,7 +46,7 @@ public class DiscordBot extends ListenerAdapter {
                             .replace("&", "§")
                             .replace("%color", Utils.getMemberHexColor(member))
                             .replace("%displayname", member.getEffectiveName())
-                            .replace("%message", event.getMessage().getContentDisplay()),
+                            .replace("%message", event.getMessage().getContentDisplay() + (event.getMessage().getAttachments().size() == 0 ? "" : "\n<file>")),
                         256
                     )
                 );
@@ -86,7 +88,7 @@ public class DiscordBot extends ListenerAdapter {
         Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
 //            if (!event.getUser().getId().equals("256114365894230018")) {
-//                event.reply(Config.messageCommandMissingPermissions).queue();
+//                event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
 //                return;
 //            }
             event.deferReply().queue();
@@ -111,6 +113,7 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         DiscordBot.updateOnlineStatus();
+        DiscordBot.updateApplicationCommands();
         TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
 
         Webhook w = null;
@@ -119,7 +122,7 @@ public class DiscordBot extends ListenerAdapter {
             if (webhook.getName().equals("minecraftTranslator")) {
                 w = webhook;
             }
-        };
+        }
 
         if (w == null) {
             w = channel.createWebhook("minecraftTranslator").complete();
@@ -146,4 +149,10 @@ public class DiscordBot extends ListenerAdapter {
         return DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation).getGuild().getMemberById(id);
     }
 
+    private static void updateApplicationCommands() {
+        DiscordBot.bot.upsertCommand(
+            new CommandData("rc", "Run command")
+                .addOption(OptionType.STRING, "command", "Minecraft command", true)
+        ).queue();
+    }
 }

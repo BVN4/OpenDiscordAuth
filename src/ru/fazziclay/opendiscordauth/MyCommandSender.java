@@ -1,5 +1,6 @@
 package ru.fazziclay.opendiscordauth;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import org.bukkit.Bukkit;
@@ -20,6 +21,8 @@ import java.util.UUID;
 public class MyCommandSender implements RemoteConsoleCommandSender {
 
     SlashCommandEvent event;
+
+    String reply = "";
 
     Boolean isOriginalEdited = false;
 
@@ -101,7 +104,13 @@ public class MyCommandSender implements RemoteConsoleCommandSender {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        this.event.getHook().retrieveOriginal().complete().reply(this.formatMessage(message)).queue();
+        Message original = this.event.getHook().retrieveOriginal().complete();
+            if (this.reply.isEmpty()) {
+                this.reply = this.formatMessage(message);
+            } else {
+                this.reply += ("\n" + this.formatMessage(message));
+            }
+            original.editMessage(this.reply).queue();
     }
 
     @Override
