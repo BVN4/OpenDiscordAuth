@@ -10,9 +10,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
@@ -83,10 +85,10 @@ public class DiscordBot extends ListenerAdapter {
         String command = Objects.requireNonNull(event.getOption("command")).getAsString();
         Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
-            if (!event.getUser().getId().equals("256114365894230018")) {
-                event.reply(Config.messageCommandMissingPermissions).queue();
-                return;
-            }
+//            if (!event.getUser().getId().equals("256114365894230018")) {
+//                event.reply(Config.messageCommandMissingPermissions).queue();
+//                return;
+//            }
             event.deferReply().queue();
 
             // Обработка команды и добавление её задачи в планировщик основного потока
@@ -128,6 +130,15 @@ public class DiscordBot extends ListenerAdapter {
     public static void updateOnlineStatus() {
         DiscordBot.bot.getPresence().setActivity(
             Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
+        );
+        Bukkit.getLogger().info(String.valueOf(Bukkit.getServer().getOnlinePlayers().size()));
+    }
+
+    public static void updateOnlineStatus(Player player) {
+        Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        int size = (players.size() - (players.contains(player) ? 1 : 0));
+        DiscordBot.bot.getPresence().setActivity(
+            Activity.playing("Онлайн: " + size)
         );
     }
 
