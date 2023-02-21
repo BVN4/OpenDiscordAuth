@@ -12,6 +12,10 @@ sessionExpiredDelay: 120
 # Время, сколько секунд после выхода человек может зайти назад
 # без необходимости вводить код
 
+discordChatIdForTranslation: "ENTER CHAT ID HERE"
+# ID чата в который будут отправляться сообщения из чата майнкрафта и обратно
+# Если вы указали это, боту требуется выдать право MANAGE_WEBHOOKS
+
 codeCreator:
   ExpiredDelay: 43 # Время сколько действует одноразовый код
   Minimum: 0       # Минимальное число при генерации кода
@@ -38,4 +42,11 @@ message:
   AccountCreatingConfirming: "Подтвердите привязку аккаунта $discord к вашему нику($nickname). Напишие в чат &a'confirm' - для подтверждения&r, &c'cancel' - для отмены&r."
   AuthorizationTimeout: "Время авторизации вышло."
   PlayerKickPluginDisabled: "Вас выгнали, потому что плагин авторизации отключен, и вы не вошли в систему."
+  CommandMissingPermissions: "У вас недостаточно прав"
+  CommandSuccess: "Команда исполнена"
+  CommandError: "Ошибка"
+  GlobalMessageFormat: '&7[&bG&7] [&3discord&7] &%color%displayname &9> &7%message'
+
+opIdsList: ["123456789123456789", "123456789123456789"]
+# Список ID пользователей которые смогут пользоваться командой /rc
 ```

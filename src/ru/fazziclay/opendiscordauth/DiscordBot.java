@@ -31,7 +31,6 @@ public class DiscordBot extends ListenerAdapter {
         String content           = event.getMessage().getContentRaw();
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
-        Member member            = event.getMessage().getMember();
 
         if (author.isBot()) {
             return;
@@ -40,16 +39,7 @@ public class DiscordBot extends ListenerAdapter {
         //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
         if (channel.getType().isGuild()) {
             if (channel.getId().equals(Config.discordChatIdForTranslation)) {
-                Bukkit.broadcastMessage(
-                    Utils.truncate(
-                        Config.globalMessageFormat
-                            .replace("&", "§")
-                            .replace("%color", Utils.getMemberHexColor(member))
-                            .replace("%displayname", member.getEffectiveName())
-                            .replace("%message", event.getMessage().getContentDisplay() + (event.getMessage().getAttachments().size() == 0 ? "" : "\n<file>")),
-                        256
-                    )
-                );
+                Bukkit.broadcastMessage(Utils.getMessageForBroadcast(event));
             }
             return;
         }
@@ -87,10 +77,10 @@ public class DiscordBot extends ListenerAdapter {
         String command = Objects.requireNonNull(event.getOption("command")).getAsString();
         Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
-//            if (!event.getUser().getId().equals("256114365894230018")) {
-//                event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
-//                return;
-//            }
+            if (!Config.opUserIdList.contains(event.getUser().getId())) {
+                event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
+                return;
+            }
             event.deferReply().queue();
 
             // Обработка команды и добавление её задачи в планировщик основного потока
@@ -134,7 +124,6 @@ public class DiscordBot extends ListenerAdapter {
         DiscordBot.bot.getPresence().setActivity(
             Activity.playing("Онлайн: " + Bukkit.getServer().getOnlinePlayers().size())
         );
-        Bukkit.getLogger().info(String.valueOf(Bukkit.getServer().getOnlinePlayers().size()));
     }
 
     public static void updateOnlineStatus(Player player) {

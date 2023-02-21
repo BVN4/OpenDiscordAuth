@@ -105,12 +105,13 @@ public class MyCommandSender implements RemoteConsoleCommandSender {
     @Override
     public void sendMessage(@NotNull String message) {
         Message original = this.event.getHook().retrieveOriginal().complete();
-            if (this.reply.isEmpty()) {
-                this.reply = this.formatMessage(message);
-            } else {
-                this.reply += ("\n" + this.formatMessage(message));
-            }
-            original.editMessage(this.reply).queue();
+
+        if (this.reply.isEmpty()) {
+            this.reply = this.formatMessage(message);
+        } else {
+            this.reply += ("\n" + this.formatMessage(message));
+        }
+        original.editMessage(this.reply).queue();
     }
 
     @Override

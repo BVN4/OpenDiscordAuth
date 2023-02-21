@@ -1,5 +1,7 @@
 package ru.fazziclay.opendiscordauth;
 
+import java.util.List;
+
 public class Config {
 
     public static Boolean isDebugEnable = false;
@@ -34,6 +36,6 @@ public class Config {
     public static String messageCommandMissingPermissions = Main.pluginConfig.getString("message.CommandMissingPermissions");
     public static String messageCommandSuccess = Main.pluginConfig.getString("message.CommandSuccess");
     public static String messageCommandError = Main.pluginConfig.getString("message.CommandError");
-
     public static String globalMessageFormat = Main.pluginConfig.getString("message.GlobalMessageFormat");
+    public static List<?> opUserIdList = Main.pluginConfig.getList("opIdsList");
 }

@@ -2,6 +2,7 @@ package ru.fazziclay.opendiscordauth;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -178,11 +179,27 @@ public class Utils {
         }
     }
 
-    public static String getMemberHexColor(Member member){
+    public static String getMemberHexColor(Member member) {
         return "#"+Integer.toHexString(
             Objects.requireNonNull(Objects.requireNonNull(member).getColor()).getRGB()
         ).substring(2);
-    };
+    }
+
+    public static String getMessageForBroadcast(MessageReceivedEvent event) {
+        return Utils.truncate(
+            Config.globalMessageFormat
+                .replace("&", "§")
+                .replace("%color", Utils.getMemberHexColor(event.getMember()))
+                .replace("%displayname", event.getMember().getEffectiveName())
+                .replace("%message", Utils.getMessageContentForBroadcast(event)),
+            256
+        );
+    }
+
+    public static String getMessageContentForBroadcast(MessageReceivedEvent event) {
+        return event.getMessage().getContentDisplay()
+            + (event.getMessage().getAttachments().size() == 0 ? "" : "\n<file>");
+    }
 
     public static boolean isFileExist(String path) {
         File file = new File(path);
