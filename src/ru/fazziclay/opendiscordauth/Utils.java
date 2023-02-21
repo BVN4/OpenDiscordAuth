@@ -2,6 +2,7 @@ package ru.fazziclay.opendiscordauth;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -178,11 +179,33 @@ public class Utils {
         }
     }
 
-    public static String getMemberHexColor(Member member){
+    public static String truncate(String str, int length, String postfix) {
+        int lengthTarget = length - postfix.length();
+        if (lengthTarget < 0) {
+            throw new IllegalArgumentException("Postfix length cannot exceed the maximum length");
+        }
+        return Utils.truncate(str, lengthTarget) + postfix;
+    }
+
+    public static String getMemberHexColor(Member member) {
         return "#"+Integer.toHexString(
             Objects.requireNonNull(Objects.requireNonNull(member).getColor()).getRGB()
         ).substring(2);
-    };
+    }
+
+    public static String getMessageForBroadcast(MessageReceivedEvent event) {
+        boolean hasFiles = event.getMessage().getAttachments().size() == 0;
+        String filesMessage = (!hasFiles ? " <file>" : "");
+        String message = event.getMessage().getContentDisplay();
+
+        String output = Config.globalMessageFormat
+            .replace("&", "§")
+            .replace("%color", Utils.getMemberHexColor(event.getMember()))
+            .replace("%displayname", event.getMember().getEffectiveName())
+            .replace("%message", message);
+
+        return Utils.truncate(output, 256, filesMessage);
+    }
 
     public static boolean isFileExist(String path) {
         File file = new File(path);

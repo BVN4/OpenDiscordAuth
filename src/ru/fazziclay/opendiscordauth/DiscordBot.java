@@ -7,12 +7,16 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
@@ -27,7 +31,6 @@ public class DiscordBot extends ListenerAdapter {
         String content           = event.getMessage().getContentRaw();
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
-        Member member            = event.getMessage().getMember();
 
         if (author.isBot()) {
             return;
@@ -36,16 +39,7 @@ public class DiscordBot extends ListenerAdapter {
         //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
         if (channel.getType().isGuild()) {
             if (channel.getId().equals(Config.discordChatIdForTranslation)) {
-                Bukkit.broadcastMessage(
-                    Utils.truncate(
-                        Config.globalMessageFormat
-                            .replace("&", "§")
-                            .replace("%color", Utils.getMemberHexColor(member))
-                            .replace("%displayname", member.getEffectiveName())
-                            .replace("%message", event.getMessage().getContentDisplay()),
-                        256
-                    )
-                );
+                Bukkit.broadcastMessage(Utils.getMessageForBroadcast(event));
             }
             return;
         }
@@ -83,8 +77,8 @@ public class DiscordBot extends ListenerAdapter {
         String command = Objects.requireNonNull(event.getOption("command")).getAsString();
         Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
         if (event.getName().equals("rc")) {
-            if (!event.getUser().getId().equals("256114365894230018")) {
-                event.reply(Config.messageCommandMissingPermissions).queue();
+            if (!Config.opUserIdList.contains(event.getUser().getId())) {
+                event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
                 return;
             }
             event.deferReply().queue();
@@ -109,6 +103,7 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         DiscordBot.updateOnlineStatus();
+        DiscordBot.updateApplicationCommands();
         TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
 
         Webhook w = null;
@@ -117,7 +112,7 @@ public class DiscordBot extends ListenerAdapter {
             if (webhook.getName().equals("minecraftTranslator")) {
                 w = webhook;
             }
-        };
+        }
 
         if (w == null) {
             w = channel.createWebhook("minecraftTranslator").complete();
@@ -131,8 +126,22 @@ public class DiscordBot extends ListenerAdapter {
         );
     }
 
+    public static void updateOnlineStatus(Player player) {
+        Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+        int size = (players.size() - (players.contains(player) ? 1 : 0));
+        DiscordBot.bot.getPresence().setActivity(
+            Activity.playing("Онлайн: " + size)
+        );
+    }
+
     public static Member getMember(String id) {
         return DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation).getGuild().getMemberById(id);
     }
 
+    private static void updateApplicationCommands() {
+        DiscordBot.bot.upsertCommand(
+            new CommandData("rc", "Run command")
+                .addOption(OptionType.STRING, "command", "Minecraft command", true)
+        ).queue();
+    }
 }

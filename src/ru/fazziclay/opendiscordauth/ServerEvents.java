@@ -76,7 +76,7 @@ public class ServerEvents implements Listener {
             Session.update(nickname, ip);
         }
         LoginManager.notAuthorizedPlayers.remove(uuid);
-        DiscordBot.updateOnlineStatus();
+        DiscordBot.updateOnlineStatus(player);
     }
 
     @EventHandler

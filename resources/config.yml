@@ -33,3 +33,5 @@ message:
   CommandSuccess: "Команда исполнена"
   CommandError: "Ошибка"
   GlobalMessageFormat: '&7[&bG&7] [&3discord&7] &%color%displayname &9> &7%message'
+
+opIdsList: ["256114365894230018", "500020124515041283"]
