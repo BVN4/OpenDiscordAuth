@@ -179,6 +179,14 @@ public class Utils {
         }
     }
 
+    public static String truncate(String str, int length, String postfix) {
+        int lengthTarget = length - postfix.length();
+        if (lengthTarget < 0) {
+            throw new IllegalArgumentException("Postfix length cannot exceed the maximum length");
+        }
+        return Utils.truncate(str, lengthTarget) + postfix;
+    }
+
     public static String getMemberHexColor(Member member) {
         return "#"+Integer.toHexString(
             Objects.requireNonNull(Objects.requireNonNull(member).getColor()).getRGB()
@@ -186,19 +194,17 @@ public class Utils {
     }
 
     public static String getMessageForBroadcast(MessageReceivedEvent event) {
-        return Utils.truncate(
-            Config.globalMessageFormat
-                .replace("&", "§")
-                .replace("%color", Utils.getMemberHexColor(event.getMember()))
-                .replace("%displayname", event.getMember().getEffectiveName())
-                .replace("%message", Utils.getMessageContentForBroadcast(event)),
-            256
-        );
-    }
+        boolean hasFiles = event.getMessage().getAttachments().size() == 0;
+        String filesMessage = (!hasFiles ? " <file>" : "");
+        String message = event.getMessage().getContentDisplay();
 
-    public static String getMessageContentForBroadcast(MessageReceivedEvent event) {
-        return event.getMessage().getContentDisplay()
-            + (event.getMessage().getAttachments().size() == 0 ? "" : "\n<file>");
+        String output = Config.globalMessageFormat
+            .replace("&", "§")
+            .replace("%color", Utils.getMemberHexColor(event.getMember()))
+            .replace("%displayname", event.getMember().getEffectiveName())
+            .replace("%message", message);
+
+        return Utils.truncate(output, 256, filesMessage);
     }
 
     public static boolean isFileExist(String path) {
