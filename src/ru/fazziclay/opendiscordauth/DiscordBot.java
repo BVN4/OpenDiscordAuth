@@ -126,14 +126,20 @@ public class DiscordBot extends ListenerAdapter {
         );
     }
 
-    public static void updateOnlineStatus(Player player, Boolean positive) {
+    public static void updateOnlineStatus(Player player, Boolean isLeave) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
 
         int size = players.size();
-        if(positive) {
-            size += (players.contains(player) ? 0 : 1);
-        } else
-            size -= (players.contains(player) ? 1 : 0);
+
+        // В списоке игроков может не быть игрока, с которым пришёл ивент,
+        // тогда добавим его к кол-ву, для упрощения расчётов
+        if (!players.contains(player)) {
+            size++;
+        }
+
+        if (isLeave) {
+            size--;
+        }
 
         DiscordBot.bot.getPresence().setActivity(
             Activity.playing("Онлайн: " + size)
