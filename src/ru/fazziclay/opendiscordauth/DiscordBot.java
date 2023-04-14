@@ -126,9 +126,9 @@ public class DiscordBot extends ListenerAdapter {
         );
     }
 
-    public static void updateOnlineStatus(Player player) {
+    public static void updateOnlineStatus(Player player, Boolean positive) {
         Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
-        int size = (players.size() - (players.contains(player) ? 1 : 0));
+        int size = (players.size() - (players.contains(player) ? (positive ? -1 : 1) : 0));
         DiscordBot.bot.getPresence().setActivity(
             Activity.playing("Онлайн: " + size)
         );
