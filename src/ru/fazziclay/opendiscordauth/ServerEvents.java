@@ -54,7 +54,7 @@ public class ServerEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
-        DiscordBot.updateOnlineStatus();
+        DiscordBot.updateOnlineStatus(player, true);
     }
 
     @EventHandler
@@ -76,7 +76,7 @@ public class ServerEvents implements Listener {
             Session.update(nickname, ip);
         }
         LoginManager.notAuthorizedPlayers.remove(uuid);
-        DiscordBot.updateOnlineStatus(player);
+        DiscordBot.updateOnlineStatus(player, false);
     }
 
     @EventHandler
