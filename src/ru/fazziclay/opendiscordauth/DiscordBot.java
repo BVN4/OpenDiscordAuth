@@ -104,7 +104,9 @@ public class DiscordBot extends ListenerAdapter {
             String ip = Utils.getGlobalIp();
             if (!ip.equals(Utils.NULL_IP)) {
                 Bukkit.getLogger().info(ip);
-                event.getHook().editOriginal("Актуальное IP сервера `" + ip + ":" + Bukkit.getServer().getPort()).queue();
+                event.getHook().editOriginal(
+                    "Актуальное IP сервера `" + ip + ":" + Bukkit.getServer().getPort() + "`"
+                ).queue();
             } else {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
             }
