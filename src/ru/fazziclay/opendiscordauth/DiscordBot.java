@@ -15,9 +15,11 @@ import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.net.InetAddress;
 
 public class DiscordBot extends ListenerAdapter {
 
@@ -73,10 +75,11 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
-        MyCommandSender sender = new MyCommandSender(event);
-        String command = Objects.requireNonNull(event.getOption("command")).getAsString();
-        Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
+
         if (event.getName().equals("rc")) {
+            MyCommandSender sender = new MyCommandSender(event);
+            String command = Objects.requireNonNull(event.getOption("command")).getAsString();
+            Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
             if (!Config.opUserIdList.contains(event.getUser().getId())) {
                 event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
                 return;
@@ -98,10 +101,18 @@ public class DiscordBot extends ListenerAdapter {
                     ).queue();
                 }
             });
+        } else if (event.getName().equals("get-ip")) {
+            try {
+                event.reply("Актуальное IP сервера `" + InetAddress.getLocalHost().getHostAddress() + ":" + Bukkit.getServer().getPort() + "`").queue();
+            } catch (UnknownHostException e) {
+                event.reply("Неудалось получить IP").queue();
+            }
+
         }
     }
     @Override
     public void onReady(@NotNull ReadyEvent event) {
+        Bukkit.getLogger().info(DiscordBot.bot.getSelfUser().getAsTag());
         DiscordBot.updateOnlineStatus();
         DiscordBot.updateApplicationCommands();
         TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
