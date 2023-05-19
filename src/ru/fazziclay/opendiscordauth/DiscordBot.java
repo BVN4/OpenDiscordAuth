@@ -15,11 +15,9 @@ import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import java.net.InetAddress;
 
 public class DiscordBot extends ListenerAdapter {
 
@@ -102,12 +100,14 @@ public class DiscordBot extends ListenerAdapter {
                 }
             });
         } else if (event.getName().equals("get-ip")) {
-            try {
-                event.reply("Актуальное IP сервера `" + InetAddress.getLocalHost().getHostAddress() + ":" + Bukkit.getServer().getPort() + "`").queue();
-            } catch (UnknownHostException e) {
-                event.reply("Неудалось получить IP").queue();
+            event.deferReply().queue();
+            String ip = Utils.getGlobalIp();
+            if (!ip.equals("0.0.0.0")) {
+                Bukkit.getLogger().info(ip);
+                event.getHook().editOriginal("Актуальное IP сервера `" + ip + ":" + Bukkit.getServer().getPort()).queue();
+            } else {
+                event.getHook().editOriginal("Неудалось получить IP").queue();
             }
-
         }
     }
     @Override

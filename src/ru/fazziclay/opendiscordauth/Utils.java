@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -205,6 +203,14 @@ public class Utils {
             .replace("%message", message);
 
         return Utils.truncate(output, 256, filesMessage);
+    }
+
+    public static String getGlobalIp() {
+        try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
+            return s.next();
+        } catch (java.io.IOException e) {
+            return "0.0.0.0";
+        }
     }
 
     public static boolean isFileExist(String path) {
