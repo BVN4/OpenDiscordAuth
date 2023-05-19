@@ -16,6 +16,9 @@ import java.util.UUID;
 
 public class Utils {
 
+    public static String GLOBAL_IP_API_URL = "https://api.ipify.org";
+    public static String NULL_IP = "0.0.0.0";
+
     public static String getPlayerIp(Player player) {
         return Objects.requireNonNull(player.getAddress()).getHostName();
     }
@@ -206,13 +209,17 @@ public class Utils {
     }
 
     public static String getGlobalIp() {
-        try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
+        try (
+            java.util.Scanner s = new java.util.Scanner(
+                new java.net.URL(Utils.GLOBAL_IP_API_URL).openStream(),
+                "UTF-8"
+            ).useDelimiter("\\A")
+        ) {
             return s.next();
         } catch (java.io.IOException e) {
-            return "0.0.0.0";
+            return Utils.NULL_IP;
         }
     }
-
     public static boolean isFileExist(String path) {
         File file = new File(path);
         return file.isFile();
