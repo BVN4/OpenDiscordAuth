@@ -13,10 +13,11 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Utils {
+
+    public static String GLOBAL_IP_API_URL = "https://api.ipify.org";
+    public static String NULL_IP = "0.0.0.0";
 
     public static String getPlayerIp(Player player) {
         return Objects.requireNonNull(player.getAddress()).getHostName();
@@ -207,6 +208,18 @@ public class Utils {
         return Utils.truncate(output, 256, filesMessage);
     }
 
+    public static String getGlobalIp() {
+        try (
+            java.util.Scanner s = new java.util.Scanner(
+                new java.net.URL(Utils.GLOBAL_IP_API_URL).openStream(),
+                "UTF-8"
+            ).useDelimiter("\\A")
+        ) {
+            return s.next();
+        } catch (java.io.IOException e) {
+            return Utils.NULL_IP;
+        }
+    }
     public static boolean isFileExist(String path) {
         File file = new File(path);
         return file.isFile();
