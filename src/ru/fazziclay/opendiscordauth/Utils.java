@@ -268,6 +268,7 @@ public class Utils {
             params.add(new BasicNameValuePair("name", Config.domainProviderServerDomainSubName));
             params.add(new BasicNameValuePair("value", ip));
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+            httppost.setHeader("X-API-KEY", Config.domainProviderToken);
 
             httpclient.execute(httppost);
             return Boolean.TRUE;
