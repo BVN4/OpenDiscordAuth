@@ -246,9 +246,10 @@ public class Utils {
 
                 JSONObject obj = (JSONObject) i;
 
-                if (obj.getString("name").equals(Config.domainProviderServerDomainSubName))
+                if (obj.getString("name").equals(Config.domainProviderServerDomainSubName)) {
                     ip = obj.getString("value");
                     break;
+                }
             }
 
             return ip;
