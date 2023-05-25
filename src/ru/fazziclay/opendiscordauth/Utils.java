@@ -4,12 +4,21 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.libs.org.apache.http.NameValuePair;
+import org.bukkit.craftbukkit.libs.org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.bukkit.craftbukkit.libs.org.apache.http.client.methods.HttpPost;
+import org.bukkit.craftbukkit.libs.org.apache.http.message.BasicNameValuePair;
+import org.bukkit.craftbukkit.libs.org.apache.http.client.HttpClient;
+import org.bukkit.craftbukkit.libs.org.apache.http.impl.client.HttpClients;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -219,6 +228,57 @@ public class Utils {
         } catch (java.io.IOException e) {
             return Utils.NULL_IP;
         }
+    }
+
+    public static String getDnsIp() {
+        try (
+            java.util.Scanner s = new java.util.Scanner(
+                new java.net.URL(
+                    Config.domainProviderGetDnsEntryUrl + "/" + Config.domainProviderDomainName
+                ).openStream(),
+                "UTF-8"
+            ).useDelimiter("\\A")
+        ) {
+            JSONObject response = new JSONObject(new JSONParser().parse(s.next()));
+
+            String ip = Utils.NULL_IP;
+            for (Object i: response.getJSONArray("data")) {
+
+                JSONObject obj = (JSONObject) i;
+
+                if (obj.getString("name").equals(Config.domainProviderServerDomainSubName))
+                    ip = obj.getString("value");
+                    break;
+            }
+
+            return ip;
+
+        } catch (IOException | ParseException e) {
+            return Utils.NULL_IP;
+        }
+    }
+
+    public static Boolean setDnsIp(String ip) {
+        try {
+            HttpClient httpclient = HttpClients.createDefault();
+            HttpPost httppost = new HttpPost(Config.domainProviderPostDnsEntryUrl + "/" + Config.domainProviderDomainName);
+
+            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+            params.add(new BasicNameValuePair("type", "A"));
+            params.add(new BasicNameValuePair("name", Config.domainProviderServerDomainSubName));
+            params.add(new BasicNameValuePair("value", ip));
+            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+
+            httpclient.execute(httppost);
+            return Boolean.TRUE;
+        } catch (IOException e) {
+            return Boolean.FALSE;
+        }
+    }
+
+    public static String getCrossed(String target, Boolean cross) {
+        if (cross) target = "~~" + target + "~~";
+        return target;
     }
     public static boolean isFileExist(String path) {
         File file = new File(path);

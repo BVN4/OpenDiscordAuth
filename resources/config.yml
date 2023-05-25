@@ -2,6 +2,15 @@ discordBotToken: "ENTER DISCORD BOT TOKEN HERE"
 accountsFilePath: "./plugins/OpenDiscordAuth/accounts.json"
 sessionExpiredDelay: 120
 discordChatIdForTranslation: "ENTER CHAT ID HERE"
+discordChatIdForLogs: "ENTER CHAT ID HERE"
+
+tokenForDomainProvider: "ENTER DOMAIN PROVIDER TOKEN HERE"
+domainProviderInfo:
+  token: "ENTER DOMAIN PROVIDER TOKEN HERE"
+  getDnsEntryUrl: "https://elasticweb.org/api/dns/list"
+  postDnsEntryUrl: "https://elasticweb.org/api/dns/list"
+  domainName: "igc.su"
+  serverDomainSubName: "minecraft"
 
 codeCreator:
   ExpiredDelay: 43
