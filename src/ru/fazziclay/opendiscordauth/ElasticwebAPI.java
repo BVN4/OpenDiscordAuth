@@ -12,12 +12,10 @@ import org.bukkit.craftbukkit.libs.org.apache.http.impl.client.HttpClients;
 import org.bukkit.craftbukkit.libs.org.apache.http.message.BasicNameValuePair;
 import org.bukkit.craftbukkit.libs.org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class ElasticwebAPI {
 
     private static final String DNS_ENTRY_ENDPOINT = "/api/dns/entry/";
 
-    public static boolean setDnsIp(String ip) {
+    public static boolean updateDnsIp(String ip) {
 
         // Получаем список dns записей
         JSONObject dnsList = ElasticwebAPI.getDnsList(Config.domainProviderToken, Config.domainProviderDomainName);
@@ -41,14 +39,14 @@ public class ElasticwebAPI {
 
             JSONObject obj = (JSONObject) i;
 
-            if (obj.getString("name").equals(Config.domainProviderServerDomainSubName)
+            if (
+                obj.getString("name").equals(Config.domainProviderServerDomainSubName)
                     && obj.getString("type").equals("A")
             ) {
                 dnsId = obj.getString("id");
                 break;
             }
         }
-
         return true;
     }
 
@@ -68,7 +66,6 @@ public class ElasticwebAPI {
         }
 
         return ip;
-
     }
 
     public static JSONObject getDnsList(String token, String domainName) {
@@ -92,7 +89,7 @@ public class ElasticwebAPI {
     public static JSONObject getDnsEntry(String token, String dnsId) {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet( ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
+            HttpGet httpget = new HttpGet(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
             httpget.setHeader("X-API-KEY", token);
 
             HttpResponse response = httpclient.execute(httpget);
@@ -107,14 +104,14 @@ public class ElasticwebAPI {
         }
     }
 
-    public static JSONObject postDnsEntry(String token, String domainName, String ip) {
+    public static JSONObject postDnsEntry(String token, String domainName, String subDomainName, String ip) {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost( ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + domainName);
+            HttpPost httppost = new HttpPost(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + domainName);
 
             List<NameValuePair> params = new ArrayList<NameValuePair>(2);
             params.add(new BasicNameValuePair("type", "A"));
-            params.add(new BasicNameValuePair("name", domainName));
+            params.add(new BasicNameValuePair("name", subDomainName));
             params.add(new BasicNameValuePair("value", ip));
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
             httppost.setHeader("X-API-KEY", token);
@@ -134,7 +131,7 @@ public class ElasticwebAPI {
     public static JSONObject deleteDnsEntry(String token, String dnsId) {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpDelete httpdelete = new HttpDelete( ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
+            HttpDelete httpdelete = new HttpDelete(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
             httpdelete.setHeader("X-API-KEY", token);
 
             HttpResponse response = httpclient.execute(httpdelete);

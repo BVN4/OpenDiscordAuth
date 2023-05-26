@@ -119,8 +119,8 @@ public class DiscordBot extends ListenerAdapter {
                             DiscordBot.serverIp,
                             port
                         ),
-                        !DiscordBot.serverIp.equals(ip))
-
+                        !DiscordBot.serverIp.equals(ip)
+                    )
                     + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
             } else {
@@ -199,7 +199,7 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         if (!DiscordBot.serverIp.equals(ip)) {
-            Boolean status = ElasticwebAPI.setDnsIp(ip);
+            Boolean status = ElasticwebAPI.updateDnsIp(ip);
             String replay = "Запрос на смену DNS отправлен";
             if (!status) replay = "Запрос на смену DNS не удался";
 
