@@ -4,12 +4,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.org.apache.http.NameValuePair;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.methods.HttpPost;
-import org.bukkit.craftbukkit.libs.org.apache.http.message.BasicNameValuePair;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.HttpClient;
-import org.bukkit.craftbukkit.libs.org.apache.http.impl.client.HttpClients;
 import org.bukkit.entity.Player;
 
 import org.json.JSONObject;
@@ -230,58 +224,11 @@ public class Utils {
         }
     }
 
-    public static String getDnsIp() {
-        try (
-            java.util.Scanner s = new java.util.Scanner(
-                new java.net.URL(
-                    "https://elasticweb.org/api/dns/list/" + Config.domainProviderDomainName
-                ).openStream(),
-                "UTF-8"
-            ).useDelimiter("\\A")
-        ) {
-            JSONObject response = new JSONObject(new JSONParser().parse(s.next()));
-
-            String ip = Utils.NULL_IP;
-            for (Object i: response.getJSONArray("data")) {
-
-                JSONObject obj = (JSONObject) i;
-
-                if (obj.getString("name").equals(Config.domainProviderServerDomainSubName)) {
-                    ip = obj.getString("value");
-                    break;
-                }
-            }
-
-            return ip;
-
-        } catch (IOException | ParseException e) {
-            return Utils.NULL_IP;
-        }
-    }
-
-    public static boolean setDnsIp(String ip) {
-        try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost("https://elasticweb.org/api/dns/list/" + Config.domainProviderDomainName);
-
-            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-            params.add(new BasicNameValuePair("type", "A"));
-            params.add(new BasicNameValuePair("name", Config.domainProviderServerDomainSubName));
-            params.add(new BasicNameValuePair("value", ip));
-            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            httppost.setHeader("X-API-KEY", Config.domainProviderToken);
-
-            httpclient.execute(httppost);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     public static String getCrossed(String target, Boolean cross) {
         if (cross) target = "~~" + target + "~~";
         return target;
     }
+
     public static boolean isFileExist(String path) {
         File file = new File(path);
         return file.isFile();

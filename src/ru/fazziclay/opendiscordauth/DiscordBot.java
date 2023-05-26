@@ -103,21 +103,25 @@ public class DiscordBot extends ListenerAdapter {
         } else if (event.getName().equals("get-ip")) {
             event.deferReply().queue();
             String ip = Utils.getGlobalIp();
-            String dnsIp = Utils.getDnsIp();
+            int port = Bukkit.getServer().getPort();
 
-            if (!dnsIp.equals(ip)) DiscordBot.checkIpUpdate();
+            if (!DiscordBot.serverIp.equals(ip)) DiscordBot.checkIpUpdate();
 
             if (!ip.equals(Utils.NULL_IP)) {
                 Bukkit.getLogger().info(ip);
                 event.getHook().editOriginal(
-                    Utils.getCrossed("URL для подключения: "
-                        + Config.domainProviderServerDomainSubName
-                        + "."
-                        + Config.domainProviderDomainName
-                        + ":"
-                        + Bukkit.getServer().getPort() + "\n"
-                    + "DNS IP сервера `" + ip + ":" + Bukkit.getServer().getPort() + "`\n", !dnsIp.equals(ip))
-                    + "Актуальное IP сервера `" + ip + ":" + Bukkit.getServer().getPort() + "`\n"
+                    Utils.getCrossed(
+                        String.format(
+                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`",
+                            Config.domainProviderServerDomainSubName,
+                            Config.domainProviderDomainName,
+                            port,
+                            DiscordBot.serverIp,
+                            port
+                        ),
+                        !DiscordBot.serverIp.equals(ip))
+
+                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
             } else {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
@@ -191,11 +195,11 @@ public class DiscordBot extends ListenerAdapter {
     private static String checkIpUpdate() {
         String ip = Utils.getGlobalIp();
         if (DiscordBot.serverIp.isEmpty()) {
-            DiscordBot.serverIp = Utils.getDnsIp();
+            DiscordBot.serverIp = ElasticwebAPI.getDnsIp();
         }
 
         if (!DiscordBot.serverIp.equals(ip)) {
-            Boolean status = Utils.setDnsIp(ip);
+            Boolean status = ElasticwebAPI.setDnsIp(ip);
             String replay = "Запрос на смену DNS отправлен";
             if (!status) replay = "Запрос на смену DNS не удался";
 
