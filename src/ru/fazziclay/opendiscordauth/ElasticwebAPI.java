@@ -48,10 +48,12 @@ public class ElasticwebAPI {
             }
         }
 
+        // Если нашли удаляем устаревшую запись
         if (dnsId != null) {
             ElasticwebAPI.deleteDnsEntry(Config.domainProviderToken, dnsId);
         }
 
+        // Создаём новую запись
         ElasticwebAPI.postDnsEntry(
             Config.domainProviderToken,
             Config.domainProviderDomainName,
