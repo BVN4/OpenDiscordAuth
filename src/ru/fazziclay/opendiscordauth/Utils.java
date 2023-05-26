@@ -234,7 +234,7 @@ public class Utils {
         try (
             java.util.Scanner s = new java.util.Scanner(
                 new java.net.URL(
-                    Config.domainProviderGetDnsEntryUrl + "/" + Config.domainProviderDomainName
+                    "https://elasticweb.org/api/dns/list/" + Config.domainProviderDomainName
                 ).openStream(),
                 "UTF-8"
             ).useDelimiter("\\A")
@@ -259,10 +259,10 @@ public class Utils {
         }
     }
 
-    public static Boolean setDnsIp(String ip) {
+    public static boolean setDnsIp(String ip) {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost(Config.domainProviderPostDnsEntryUrl + "/" + Config.domainProviderDomainName);
+            HttpPost httppost = new HttpPost("https://elasticweb.org/api/dns/list/" + Config.domainProviderDomainName);
 
             List<NameValuePair> params = new ArrayList<NameValuePair>(2);
             params.add(new BasicNameValuePair("type", "A"));
@@ -272,9 +272,9 @@ public class Utils {
             httppost.setHeader("X-API-KEY", Config.domainProviderToken);
 
             httpclient.execute(httppost);
-            return Boolean.TRUE;
+            return true;
         } catch (IOException e) {
-            return Boolean.FALSE;
+            return false;
         }
     }
 

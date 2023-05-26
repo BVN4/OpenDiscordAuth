@@ -177,14 +177,15 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     private static void updateApplicationCommands() {
+        CommandData rc = new CommandData("rc", "Run command")
+            .addOption(OptionType.STRING, "command", "Minecraft command", true);
+
+        CommandData get_ip = new CommandData("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
+
         DiscordBot.bot.updateCommands()
-            .addCommands(
-                new CommandData("rc", "Run command")
-                    .addOption(OptionType.STRING, "command", "Minecraft command", true)
-            ).addCommands(
-                new CommandData("get-ip", "Возвращает актуальный IP адресс сервера Minecraft")
-            )
-        .queue();
+            .addCommands(rc)
+            .addCommands(get_ip)
+            .queue();
     }
 
     private static String checkIpUpdate() {
@@ -199,10 +200,9 @@ public class DiscordBot extends ListenerAdapter {
             if (!status) replay = "Запрос на смену DNS не удался";
 
             TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
+            int port = Bukkit.getServer().getPort();
             channel.sendMessage(
-                "<@" + Config.opUserIdList.get(0) + "> IP сервера сменилось на `"
-                    + ip + ":" + Bukkit.getServer().getPort()
-                    + "`\n" + replay
+                String.format("<@%s> IP сервера сменилось на `%s:%s`\n", Config.opUserIdList.get(0), ip, port) + replay
             ).queue();
         }
         DiscordBot.serverIp = ip;

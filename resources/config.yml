@@ -7,10 +7,8 @@ discordChatIdForLogs: "ENTER CHAT ID HERE"
 tokenForDomainProvider: "ENTER DOMAIN PROVIDER TOKEN HERE"
 domainProviderInfo:
   token: "ENTER DOMAIN PROVIDER TOKEN HERE"
-  getDnsEntryUrl: "https://elasticweb.org/api/dns/list"
-  postDnsEntryUrl: "https://elasticweb.org/api/dns/list"
-  domainName: "igc.su"
-  serverDomainSubName: "minecraft"
+  domainName: "ENTER YOUR SERVER DOMAIN HERE"
+  serverDomainSubName: "ENTER YOUR SERVER SUBDOMAIN HERE"
 
 codeCreator:
   ExpiredDelay: 43

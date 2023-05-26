@@ -38,8 +38,6 @@ public class Config {
     public static String messageCommandError = Main.pluginConfig.getString("message.CommandError");
     public static String globalMessageFormat = Main.pluginConfig.getString("message.GlobalMessageFormat");
     public static String domainProviderToken = Main.pluginConfig.getString("domainProviderInfo.token");
-    public static String domainProviderGetDnsEntryUrl = Main.pluginConfig.getString("domainProviderInfo.getDnsEntryUrl");
-    public static String domainProviderPostDnsEntryUrl = Main.pluginConfig.getString("domainProviderInfo.postDnsEntryUrl");
     public static String domainProviderDomainName = Main.pluginConfig.getString("domainProviderInfo.domainName");
     public static String domainProviderServerDomainSubName = Main.pluginConfig.getString("domainProviderInfo.serverDomainSubName");
     public static List<?> opUserIdList = Main.pluginConfig.getList("opIdsList");
