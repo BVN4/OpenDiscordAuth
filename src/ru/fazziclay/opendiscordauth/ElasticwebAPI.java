@@ -33,8 +33,8 @@ public class ElasticwebAPI {
         // Получаем список dns записей
         JSONObject dnsList = ElasticwebAPI.getDnsList(Config.domainProviderToken, Config.domainProviderDomainName);
 
-        // Ищем dnsIp записи относящейся к нужнуму поддомену
-        String dnsId = "0";
+        // Ищем dnsId записи относящейся к нужнуму поддомену
+        String dnsId = null;
         for (Object i: dnsList.getJSONArray("data")) {
 
             JSONObject obj = (JSONObject) i;
@@ -47,6 +47,18 @@ public class ElasticwebAPI {
                 break;
             }
         }
+
+        if (dnsId != null) {
+            ElasticwebAPI.deleteDnsEntry(Config.domainProviderToken, dnsId);
+        }
+
+        ElasticwebAPI.postDnsEntry(
+            Config.domainProviderToken,
+            Config.domainProviderDomainName,
+            Config.domainProviderServerDomainSubName,
+            ip
+        );
+
         return true;
     }
 
@@ -59,7 +71,10 @@ public class ElasticwebAPI {
 
             JSONObject obj = (JSONObject) i;
 
-            if (obj.getString("name").equals(Config.domainProviderServerDomainSubName)) {
+            if (
+                obj.getString("name").equals(Config.domainProviderServerDomainSubName)
+                    && obj.getString("type").equals("A")
+            ) {
                 ip = obj.getString("value");
                 break;
             }
