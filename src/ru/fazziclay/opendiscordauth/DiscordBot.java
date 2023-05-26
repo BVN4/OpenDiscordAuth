@@ -199,7 +199,7 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         if (!DiscordBot.serverIp.equals(ip)) {
-            Boolean status = ElasticwebAPI.updateDnsIp(ip);
+            boolean status = ElasticwebAPI.updateDnsIp(ip);
             long unixTime = System.currentTimeMillis() / 1000L;
             String replay = String.format("Запрос на смену DNS отправлен <t:%d:R>", unixTime);
             if (!status) replay = "Запрос на смену DNS не удался";
