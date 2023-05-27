@@ -23,34 +23,17 @@ import java.util.List;
 public class ElasticwebAPI {
 
     private static final String API_ROOT = "elasticweb.org";
-
     private static final String DNS_LIST_ENDPOINT = "/api/dns/list/";
-
     private static final String DNS_ENTRY_ENDPOINT = "/api/dns/entry/";
 
     public static boolean updateDnsIp(String ip) {
 
         // Получаем список dns записей
-        JSONObject dnsList = ElasticwebAPI.getDnsList(Config.domainProviderToken, Config.domainProviderDomainName);
-
-        // Ищем dnsId записи относящейся к нужнуму поддомену
-        String dnsId = null;
-        for (Object i: dnsList.getJSONArray("data")) {
-
-            JSONObject obj = (JSONObject) i;
-
-            if (
-                obj.getString("name").equals(Config.domainProviderServerDomainSubName)
-                    && obj.getString("type").equals("A")
-            ) {
-                dnsId = obj.getString("id");
-                break;
-            }
-        }
+        JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
 
         // Если нашли удаляем устаревшую запись
-        if (dnsId != null) {
-            ElasticwebAPI.deleteDnsEntry(Config.domainProviderToken, dnsId);
+        if (entry != null) {
+            ElasticwebAPI.deleteDnsEntry(Config.domainProviderToken, entry.getString("id"));
         }
 
         // Создаём новую запись
@@ -66,23 +49,33 @@ public class ElasticwebAPI {
 
     public static String getDnsIp() {
 
+        JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
+        String ip = entry.getString("value");
+
+        return ip;
+    }
+
+    public static JSONObject getDnsEntryFromList() {
+
         JSONObject response = ElasticwebAPI.getDnsList(Config.domainProviderToken, Config.domainProviderDomainName);
 
-        String ip = Utils.NULL_IP;
+        JSONObject entry = null;
         for (Object i: response.getJSONArray("data")) {
 
             JSONObject obj = (JSONObject) i;
 
             if (
-                obj.getString("name").equals(Config.domainProviderServerDomainSubName)
+                obj.getString("name").equals(
+                    String.format("%s.%s.", Config.domainProviderServerDomainSubName, Config.domainProviderDomainName)
+                )
                     && obj.getString("type").equals("A")
             ) {
-                ip = obj.getString("value");
+                entry = obj;
                 break;
             }
         }
 
-        return ip;
+        return entry;
     }
 
     public static JSONObject getDnsList(String token, String domainName) {
@@ -128,7 +121,7 @@ public class ElasticwebAPI {
 
             List<NameValuePair> params = new ArrayList<NameValuePair>(2);
             params.add(new BasicNameValuePair("type", "A"));
-            params.add(new BasicNameValuePair("name", subDomainName));
+            params.add(new BasicNameValuePair("name", String.format("%s.%s.", domainName, subDomainName)));
             params.add(new BasicNameValuePair("value", ip));
             httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
             httppost.setHeader("X-API-KEY", token);
