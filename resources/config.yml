@@ -4,7 +4,6 @@ sessionExpiredDelay: 120
 discordChatIdForTranslation: "ENTER CHAT ID HERE"
 discordChatIdForLogs: "ENTER CHAT ID HERE"
 
-tokenForDomainProvider: "ENTER DOMAIN PROVIDER TOKEN HERE"
 domainProviderInfo:
   token: "ENTER DOMAIN PROVIDER TOKEN HERE"
   domainName: "ENTER YOUR SERVER DOMAIN HERE"
