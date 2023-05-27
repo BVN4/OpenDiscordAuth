@@ -28,6 +28,14 @@ public class ElasticwebAPI {
 
     public static boolean updateDnsIp(String ip) {
 
+        if (
+            Config.domainProviderToken == null ||
+                Config.domainProviderDomainName == null ||
+                Config.domainProviderServerDomainSubName == null
+        ) {
+            return false;
+        }
+
         // Получаем список dns записей
         JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
 
@@ -48,6 +56,13 @@ public class ElasticwebAPI {
     }
 
     public static String getDnsIp() {
+        if (
+            Config.domainProviderToken == null ||
+            Config.domainProviderDomainName == null ||
+            Config.domainProviderServerDomainSubName == null
+        ) {
+            return null;
+        }
 
         JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
 
