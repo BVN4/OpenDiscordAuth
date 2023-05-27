@@ -50,9 +50,8 @@ public class ElasticwebAPI {
     public static String getDnsIp() {
 
         JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
-        String ip = entry.getString("value");
 
-        return ip;
+        return entry.getString("value");
     }
 
     public static JSONObject getDnsEntryFromList() {
