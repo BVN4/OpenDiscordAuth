@@ -2,6 +2,13 @@ discordBotToken: "ENTER DISCORD BOT TOKEN HERE"
 accountsFilePath: "./plugins/OpenDiscordAuth/accounts.json"
 sessionExpiredDelay: 120
 discordChatIdForTranslation: "ENTER CHAT ID HERE"
+discordChatIdForLogs: "ENTER CHAT ID HERE"
+
+tokenForDomainProvider: "ENTER DOMAIN PROVIDER TOKEN HERE"
+domainProviderInfo:
+  token: "ENTER DOMAIN PROVIDER TOKEN HERE"
+  domainName: "ENTER YOUR SERVER DOMAIN HERE"
+  serverDomainSubName: "ENTER YOUR SERVER SUBDOMAIN HERE"
 
 codeCreator:
   ExpiredDelay: 43

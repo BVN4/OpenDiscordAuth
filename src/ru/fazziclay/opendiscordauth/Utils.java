@@ -6,10 +6,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -220,6 +223,12 @@ public class Utils {
             return Utils.NULL_IP;
         }
     }
+
+    public static String getCrossed(String target, Boolean cross) {
+        if (cross) target = "~~" + target + "~~";
+        return target;
+    }
+
     public static boolean isFileExist(String path) {
         File file = new File(path);
         return file.isFile();

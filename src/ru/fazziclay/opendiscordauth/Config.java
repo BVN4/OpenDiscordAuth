@@ -37,5 +37,8 @@ public class Config {
     public static String messageCommandSuccess = Main.pluginConfig.getString("message.CommandSuccess");
     public static String messageCommandError = Main.pluginConfig.getString("message.CommandError");
     public static String globalMessageFormat = Main.pluginConfig.getString("message.GlobalMessageFormat");
+    public static String domainProviderToken = Main.pluginConfig.getString("domainProviderInfo.token");
+    public static String domainProviderDomainName = Main.pluginConfig.getString("domainProviderInfo.domainName");
+    public static String domainProviderServerDomainSubName = Main.pluginConfig.getString("domainProviderInfo.serverDomainSubName");
     public static List<?> opUserIdList = Main.pluginConfig.getList("opIdsList");
 }

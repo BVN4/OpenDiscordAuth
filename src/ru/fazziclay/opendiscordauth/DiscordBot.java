@@ -23,6 +23,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static JDA bot;
     public static WebhookClient webhook;
+    public static String serverIp;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -102,10 +103,25 @@ public class DiscordBot extends ListenerAdapter {
         } else if (event.getName().equals("get-ip")) {
             event.deferReply().queue();
             String ip = Utils.getGlobalIp();
+            int port = Bukkit.getServer().getPort();
+
+            if (!DiscordBot.serverIp.equals(ip)) DiscordBot.checkIpUpdate();
+
             if (!ip.equals(Utils.NULL_IP)) {
                 Bukkit.getLogger().info(ip);
                 event.getHook().editOriginal(
-                    "Актуальное IP сервера `" + ip + ":" + Bukkit.getServer().getPort() + "`"
+                    Utils.getCrossed(
+                        String.format(
+                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`",
+                            Config.domainProviderServerDomainSubName,
+                            Config.domainProviderDomainName,
+                            port,
+                            DiscordBot.serverIp,
+                            port
+                        ),
+                        !DiscordBot.serverIp.equals(ip)
+                    )
+                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
             } else {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
@@ -117,6 +133,7 @@ public class DiscordBot extends ListenerAdapter {
         Bukkit.getLogger().info(DiscordBot.bot.getSelfUser().getAsTag());
         DiscordBot.updateOnlineStatus();
         DiscordBot.updateApplicationCommands();
+        DiscordBot.checkIpUpdate();
         TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
 
         Webhook w = null;
@@ -164,9 +181,36 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     private static void updateApplicationCommands() {
-        DiscordBot.bot.upsertCommand(
-            new CommandData("rc", "Run command")
-                .addOption(OptionType.STRING, "command", "Minecraft command", true)
-        ).queue();
+        CommandData rc = new CommandData("rc", "Run command")
+            .addOption(OptionType.STRING, "command", "Minecraft command", true);
+
+        CommandData get_ip = new CommandData("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
+
+        DiscordBot.bot.updateCommands()
+            .addCommands(rc)
+            .addCommands(get_ip)
+            .queue();
+    }
+
+    private static String checkIpUpdate() {
+        String ip = Utils.getGlobalIp();
+        if (DiscordBot.serverIp.isEmpty()) {
+            DiscordBot.serverIp = ElasticwebAPI.getDnsIp();
+        }
+
+        if (!DiscordBot.serverIp.equals(ip)) {
+            boolean status = ElasticwebAPI.updateDnsIp(ip);
+            long unixTime = System.currentTimeMillis() / 1000L;
+            String replay = String.format("Запрос на смену DNS отправлен <t:%d:R>", unixTime);
+            if (!status) replay = "Запрос на смену DNS не удался";
+
+            TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
+            int port = Bukkit.getServer().getPort();
+            channel.sendMessage(
+                String.format("<@%s> IP сервера сменилось на `%s:%s`\n", Config.opUserIdList.get(0), ip, port) + replay
+            ).queue();
+        }
+        DiscordBot.serverIp = ip;
+        return DiscordBot.serverIp;
     }
 }
