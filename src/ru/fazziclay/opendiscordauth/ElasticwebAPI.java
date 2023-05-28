@@ -1,24 +1,15 @@
 package ru.fazziclay.opendiscordauth;
 
-import org.bukkit.craftbukkit.libs.org.apache.http.HttpEntity;
-import org.bukkit.craftbukkit.libs.org.apache.http.HttpResponse;
-import org.bukkit.craftbukkit.libs.org.apache.http.NameValuePair;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.HttpClient;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.methods.HttpDelete;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.methods.HttpGet;
-import org.bukkit.craftbukkit.libs.org.apache.http.client.methods.HttpPost;
-import org.bukkit.craftbukkit.libs.org.apache.http.impl.client.HttpClients;
-import org.bukkit.craftbukkit.libs.org.apache.http.message.BasicNameValuePair;
-import org.bukkit.craftbukkit.libs.org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.fluent.Request;
+import org.apache.hc.client5.http.fluent.Content;
+import org.apache.hc.client5.http.fluent.Form;
+
+
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ElasticwebAPI {
 
@@ -29,9 +20,9 @@ public class ElasticwebAPI {
     public static boolean updateDnsIp(String ip) {
 
         if (
-            Config.domainProviderToken == null ||
-                Config.domainProviderDomainName == null ||
-                Config.domainProviderServerDomainSubName == null
+            Config.domainProviderToken.startsWith("ENTER") ||
+            Config.domainProviderDomainName.startsWith("ENTER") ||
+            Config.domainProviderServerDomainSubName.startsWith("ENTER")
         ) {
             return false;
         }
@@ -45,23 +36,23 @@ public class ElasticwebAPI {
         }
 
         // Создаём новую запись
-        ElasticwebAPI.postDnsEntry(
+        JSONObject resp = ElasticwebAPI.postDnsEntry(
             Config.domainProviderToken,
             Config.domainProviderDomainName,
             Config.domainProviderServerDomainSubName,
             ip
         );
 
-        return true;
+        return resp != null;
     }
 
     public static String getDnsIp() {
         if (
-            Config.domainProviderToken == null ||
-            Config.domainProviderDomainName == null ||
-            Config.domainProviderServerDomainSubName == null
+            Config.domainProviderToken.startsWith("ENTER") ||
+            Config.domainProviderDomainName.startsWith("ENTER") ||
+            Config.domainProviderServerDomainSubName.startsWith("ENTER")
         ) {
-            return null;
+            return Utils.NULL_IP;
         }
 
         JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
@@ -72,8 +63,10 @@ public class ElasticwebAPI {
     public static JSONObject getDnsEntryFromList() {
 
         JSONObject response = ElasticwebAPI.getDnsList(Config.domainProviderToken, Config.domainProviderDomainName);
+        if (response == null) return null;
 
         JSONObject entry = null;
+
         for (Object i: response.getJSONArray("data")) {
 
             JSONObject obj = (JSONObject) i;
@@ -94,16 +87,11 @@ public class ElasticwebAPI {
 
     public static JSONObject getDnsList(String token, String domainName) {
         try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_LIST_ENDPOINT + domainName);
-            httpget.setHeader("X-API-KEY", token);
+            Content resp = Request.get(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_LIST_ENDPOINT + domainName)
+                .setHeader("X-API-KEY", token)
+                .execute().returnContent();
 
-            HttpResponse response = httpclient.execute(httpget);
-            HttpEntity entity = response.getEntity();
-
-            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-
-            return new JSONObject(new JSONParser().parse(json));
+            return new JSONObject(new JSONParser().parse(resp.asString()));
 
         } catch (IOException | ParseException e) {
             return null;
@@ -112,16 +100,11 @@ public class ElasticwebAPI {
 
     public static JSONObject getDnsEntry(String token, String dnsId) {
         try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
-            httpget.setHeader("X-API-KEY", token);
+            Content resp = Request.get(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId)
+                .setHeader("X-API-KEY", token)
+                .execute().returnContent();
 
-            HttpResponse response = httpclient.execute(httpget);
-            HttpEntity entity = response.getEntity();
-
-            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-
-            return new JSONObject(new JSONParser().parse(json));
+            return new JSONObject(new JSONParser().parse(resp.asString()));
 
         } catch (IOException | ParseException e) {
             return null;
@@ -130,22 +113,17 @@ public class ElasticwebAPI {
 
     public static JSONObject postDnsEntry(String token, String domainName, String subDomainName, String ip) {
         try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + domainName);
+            Content resp = Request.post(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + domainName)
+                .setHeader("X-API-KEY", token)
+                .bodyForm(Form.form()
+                    .add("type", "A")
+                    .add("name", String.format("%s.%s.", domainName, subDomainName))
+                    .add("value", ip)
+                    .build()
+                )
+                .execute().returnContent();
 
-            List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-            params.add(new BasicNameValuePair("type", "A"));
-            params.add(new BasicNameValuePair("name", String.format("%s.%s.", domainName, subDomainName)));
-            params.add(new BasicNameValuePair("value", ip));
-            httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            httppost.setHeader("X-API-KEY", token);
-
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-
-            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-
-            return new JSONObject(new JSONParser().parse(json));
+            return new JSONObject(new JSONParser().parse(resp.asString()));
 
         } catch (IOException | ParseException e) {
             return null;
@@ -154,16 +132,11 @@ public class ElasticwebAPI {
 
     public static JSONObject deleteDnsEntry(String token, String dnsId) {
         try {
-            HttpClient httpclient = HttpClients.createDefault();
-            HttpDelete httpdelete = new HttpDelete(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId);
-            httpdelete.setHeader("X-API-KEY", token);
+            Content resp = Request.delete(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + dnsId)
+                .setHeader("X-API-KEY", token)
+                .execute().returnContent();
 
-            HttpResponse response = httpclient.execute(httpdelete);
-            HttpEntity entity = response.getEntity();
-
-            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-
-            return new JSONObject(new JSONParser().parse(json));
+            return new JSONObject(new JSONParser().parse(resp.asString()));
 
         } catch (IOException | ParseException e) {
             return null;

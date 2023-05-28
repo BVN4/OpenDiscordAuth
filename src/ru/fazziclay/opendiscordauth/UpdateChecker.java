@@ -53,8 +53,7 @@ public class UpdateChecker {
             }
 
         } catch (Exception e) {
-            Utils.debug("[UpdateChecker] loadUpdateChecker(): Error. e.toString()="+e.toString());
-            return;
+            Utils.debug("[UpdateChecker] loadUpdateChecker(): Error. e.toString()="+ e);
         }
     }
 }

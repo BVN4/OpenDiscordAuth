@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -215,7 +216,7 @@ public class Utils {
         try (
             java.util.Scanner s = new java.util.Scanner(
                 new java.net.URL(Utils.GLOBAL_IP_API_URL).openStream(),
-                "UTF-8"
+                StandardCharsets.UTF_8
             ).useDelimiter("\\A")
         ) {
             return s.next();

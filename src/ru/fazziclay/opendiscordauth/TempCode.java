@@ -113,7 +113,7 @@ public class TempCode {
 
     // Constructor
     public TempCode(String content, String ownerUUID, String ownerNickname, Timer expiredTimer) {
-        Utils.debug("[TempCode] -> created new object: content="+content+"; ownerUUID="+ownerUUID+"");
+        Utils.debug("[TempCode] -> created new object: content="+content+"; ownerUUID="+ownerUUID);
         this.content = content;
         this.ownerUUID = ownerUUID;
         this.ownerNickname = ownerNickname;
