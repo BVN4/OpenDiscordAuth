@@ -40,5 +40,6 @@ public class Config {
     public static String domainProviderToken = Main.pluginConfig.getString("domainProviderInfo.token");
     public static String domainProviderDomainName = Main.pluginConfig.getString("domainProviderInfo.domainName");
     public static String domainProviderServerDomainSubName = Main.pluginConfig.getString("domainProviderInfo.serverDomainSubName");
+    public static String chatPrefix = Main.pluginConfig.getString("chatPrefix");
     public static List<?> opUserIdList = Main.pluginConfig.getList("opIdsList");
 }

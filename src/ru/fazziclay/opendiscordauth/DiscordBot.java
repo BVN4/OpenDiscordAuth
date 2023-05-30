@@ -33,14 +33,19 @@ public class DiscordBot extends ListenerAdapter {
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
 
-        if (author.isBot()) {
+        if (author.getId().equals(DiscordBot.webhook.getWebhook().getId())) {
             return;
         }
 
         //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
         if (channel.getType().isGuild()) {
             if (channel.getId().equals(Config.discordChatIdForTranslation)) {
-                Bukkit.broadcastMessage(Utils.getMessageForBroadcast(event));
+                String prefix = "discord";
+                if (event.getMessage().isWebhookMessage()) {
+                    prefix = author.getName().split(" ")[0].replace("[", "").replace("]", "");
+                }
+
+                Bukkit.broadcastMessage(Utils.getMessageForBroadcast(event, prefix));
             }
             return;
         }
@@ -140,14 +145,21 @@ public class DiscordBot extends ListenerAdapter {
 
         Webhook w = null;
 
+        String subname = String.format(
+            "%s.%s/chatTranslator",
+            Config.domainProviderServerDomainSubName,
+            Config.domainProviderDomainName
+        );
+
         for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
-            if (webhook.getName().equals("minecraftTranslator")) {
+            if (webhook.getName().equals(subname)) {
                 w = webhook;
+                break;
             }
         }
 
         if (w == null) {
-            w = channel.createWebhook("minecraftTranslator").complete();
+            w = channel.createWebhook(subname).complete();
         }
         DiscordBot.webhook = new WebhookClient(w);
     }

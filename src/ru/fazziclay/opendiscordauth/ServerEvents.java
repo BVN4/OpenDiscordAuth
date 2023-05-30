@@ -119,7 +119,7 @@ public class ServerEvents implements Listener {
 
         DiscordBot.webhook.sendMessage(
             message,
-            account.effectiveNick,
+            String.format("[%s] %s", Config.chatPrefix, account.effectiveNick),
             account.effectiveAvatarUrl
         );
     }
