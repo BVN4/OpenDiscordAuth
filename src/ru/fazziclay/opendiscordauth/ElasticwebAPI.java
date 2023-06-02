@@ -115,11 +115,12 @@ public class ElasticwebAPI {
         try {
             Content resp = Request.post(ElasticwebAPI.API_ROOT + ElasticwebAPI.DNS_ENTRY_ENDPOINT + domainName)
                 .setHeader("X-API-KEY", token)
-                .bodyForm(Form.form()
-                    .add("type", "A")
-                    .add("name", String.format("%s.%s.", domainName, subDomainName))
-                    .add("value", ip)
-                    .build()
+                .bodyForm(
+                    Form.form()
+                        .add("type", "A")
+                        .add("name", String.format("%s.%s.", domainName, subDomainName))
+                        .add("value", ip)
+                        .build()
                 )
                 .execute().returnContent();
 

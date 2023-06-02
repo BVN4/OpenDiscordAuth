@@ -40,9 +40,14 @@ public class DiscordBot extends ListenerAdapter {
         //Проверка на отправку сообщения в канале для ретронсляции; Ретрансляция сообщения из чата Discord в чат Minecraft
         if (channel.getType().isGuild()) {
             if (channel.getId().equals(Config.discordChatIdForTranslation)) {
+
+                // Получение преписки к нику если сообщение было отправлено с другого Minecraft сервера с этим же плагином
                 String prefix = "discord";
                 if (event.getMessage().isWebhookMessage()) {
-                    prefix = author.getName().split(" ")[0].replace("[", "").replace("]", "");
+                    prefix = author.getName()
+                        .split(" ")[0]
+                        .replace("[", "")
+                        .replace("]", "");
                 }
 
                 Bukkit.broadcastMessage(Utils.getMessageForBroadcast(event, prefix));
@@ -132,7 +137,9 @@ public class DiscordBot extends ListenerAdapter {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
             }
 
-            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) DiscordBot.checkIpUpdate();
+            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
+                DiscordBot.checkIpUpdate();
+            }
         }
     }
     @Override
