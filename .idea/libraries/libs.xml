@@ -5,6 +5,8 @@
       <root url="jar://$PROJECT_DIR$/libs/JDA-4.4.0_350-withDependencies.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/chatex.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/httpclient5-5.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/httpclient5-fluent-5.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/httpcore5-5.2.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -88,7 +88,7 @@ public class ServerEvents implements Listener {
         String nickname = player.getName();
         String content = event.getMessage();
 
-        Utils.debug("[ServerEvents] onPlayerChat(...): nickname="+nickname+"; content="+content+"");
+        Utils.debug("[ServerEvents] onPlayerChat(...): nickname="+nickname+"; content="+content);
 
         if (!LoginManager.isAuthorized(uuid)) {
             Utils.debug("[ServerEvents] onPlayerChat(...): not authorized!");
@@ -119,7 +119,7 @@ public class ServerEvents implements Listener {
 
         DiscordBot.webhook.sendMessage(
             message,
-            account.effectiveNick,
+            String.format("[%s] %s", Config.chatPrefix, account.effectiveNick),
             account.effectiveAvatarUrl
         );
     }
@@ -135,8 +135,7 @@ public class ServerEvents implements Listener {
 
     @EventHandler
     public void onTarget(EntityTargetEvent event) {
-        if (event.getTarget() instanceof Player) {
-            Player player = (Player) event.getTarget();
+        if (event.getTarget() instanceof Player player) {
             boolean isAuthorized = LoginManager.isAuthorized(player.getUniqueId().toString());
             if (!isAuthorized) event.setCancelled(true);
         }

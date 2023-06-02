@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -197,13 +198,14 @@ public class Utils {
         ).substring(2);
     }
 
-    public static String getMessageForBroadcast(MessageReceivedEvent event) {
+    public static String getMessageForBroadcast(MessageReceivedEvent event, String prefix) {
         boolean hasFiles = event.getMessage().getAttachments().size() == 0;
         String filesMessage = (!hasFiles ? " <file>" : "");
         String message = event.getMessage().getContentDisplay();
 
         String output = Config.globalMessageFormat
             .replace("&", "§")
+            .replace("%prefix", prefix)
             .replace("%color", Utils.getMemberHexColor(event.getMember()))
             .replace("%displayname", event.getMember().getEffectiveName())
             .replace("%message", message);
@@ -215,7 +217,7 @@ public class Utils {
         try (
             java.util.Scanner s = new java.util.Scanner(
                 new java.net.URL(Utils.GLOBAL_IP_API_URL).openStream(),
-                "UTF-8"
+                StandardCharsets.UTF_8
             ).useDelimiter("\\A")
         ) {
             return s.next();
