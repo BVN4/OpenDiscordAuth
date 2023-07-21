@@ -24,7 +24,7 @@ public class UpdateChecker {
         Utils.debug("[UpdateChecker] loadUpdateChecker()");
 
         try {
-            InputStream inputStream = new URL("https://api.github.com/repos/fazziclay/opendiscordauth/releases").openStream();
+            InputStream inputStream = new URL("https://api.github.com/repos/BVN4/OpenDiscordAuth/releases").openStream();
             Scanner scanner = new Scanner(inputStream);
 
             allJson = new JSONArray(scanner.nextLine());
