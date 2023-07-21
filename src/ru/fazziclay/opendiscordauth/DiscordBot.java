@@ -33,7 +33,10 @@ public class DiscordBot extends ListenerAdapter {
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
 
-        if (author.getId().equals(DiscordBot.webhook.getWebhook().getId())) {
+        if (
+                author.getId().equals(DiscordBot.webhook.getWebhook().getId()) || // Проверка на авторство сообщений. Отбрасование сообщений автор которых этот бот или же его вебхук
+                author.getId().equals(DiscordBot.bot.getSelfUser().getId())
+        ) {
             return;
         }
 
@@ -117,7 +120,7 @@ public class DiscordBot extends ListenerAdapter {
             String dnsIp = ElasticwebAPI.getDnsIp();
             int port = Bukkit.getServer().getPort();
 
-            if (ip != null) {
+            if (!ip.equals(Utils.NULL_IP)) {
                 Bukkit.getLogger().info(ip);
                 event.getHook().editOriginal(
                     Utils.getCrossed(
@@ -129,7 +132,7 @@ public class DiscordBot extends ListenerAdapter {
                             dnsIp,
                             port
                         ),
-                        dnsIp.equals(Utils.NULL_IP)
+                        !ip.equals(dnsIp)
                     )
                     + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
@@ -224,15 +227,26 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         if (!ip.equals(DiscordBot.serverIp)) {
+            Bukkit.getLogger().info(
+                String.format(
+                    "IP inconsistent detected (%s != %s). Syncing...", ip, DiscordBot.serverIp
+                )
+            );
             boolean status = ElasticwebAPI.updateDnsIp(ip);
             long unixTime = System.currentTimeMillis() / 1000L;
             String replay = String.format("Запрос на смену DNS отправлен <t:%d:R>", unixTime);
-            if (!status) replay = "Запрос на смену DNS не удался";
+            if (!status) {
+                replay = "Запрос на смену DNS не удался";
+                Bukkit.getLogger().info("IP inconsistent synchronization failed");
+            } else {
+                Bukkit.getLogger().info("IP inconsistent synchronization complete");
+            }
 
             TextChannel channel = (TextChannel) DiscordBot.bot.getGuildChannelById(Config.discordChatIdForTranslation);
             int port = Bukkit.getServer().getPort();
             channel.sendMessage(
-                String.format("<@%s>\nIP сервера сменилось на `%s:%s`\n", Config.opUserIdList.get(0), ip, port) + replay
+                String.format("IP сервера сменилось!\n`%s:%s` -> `%s:%s`\n", dnsIp, port, ip, port
+                ) + replay
             ).queue();
         }
         DiscordBot.serverIp = ip;
