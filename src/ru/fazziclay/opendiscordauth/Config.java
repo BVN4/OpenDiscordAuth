@@ -7,6 +7,7 @@ public class Config {
     public static Boolean isDebugEnable = false;
 
     public static String discordBotToken = Main.pluginConfig.getString("discordBotToken");
+    public static boolean enablePluginAutoUpdate = Main.pluginConfig.getBoolean("enablePluginAutoUpdate");
     public static String accountsFilePath = Main.pluginConfig.getString("accountsFilePath");
     public static int sessionExpiredDelay = Main.pluginConfig.getInt("sessionExpiredDelay");
 

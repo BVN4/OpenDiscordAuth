@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -229,6 +230,18 @@ public class Utils {
     public static String getCrossed(String target, Boolean cross) {
         if (cross) target = "~~" + target + "~~";
         return target;
+    }
+
+    public static boolean downloadFile(String path, String url) {
+        try {
+            java.net.URL website = new java.net.URL(url);
+            java.nio.channels.ReadableByteChannel rbc = java.nio.channels.Channels.newChannel(website.openStream());
+            FileOutputStream fos = new FileOutputStream(path);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean isFileExist(String path) {

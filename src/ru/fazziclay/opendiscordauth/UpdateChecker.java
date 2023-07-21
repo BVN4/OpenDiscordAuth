@@ -9,14 +9,15 @@ import java.util.Scanner;
 public class UpdateChecker {
 
     // THIS
-    public static String thisVersionTag = "0.8.1";
-    public static String  thisVersionName = "0.8.1";
+    public static int thisVersionTag = 12;
+    public static String thisVersionName = "0.8.2";
     public static boolean isThisVersionRelease = false;
 
     // LAST
-    public static String lastVersionTag = "null";
+    public static int lastVersionTag = -1;
     public static String  lastVersionName = "null";
     public static String  lastVersionDownloadURL = "null";
+    public static String  lastVersionDownloadPageURL = "null";
     public static boolean isLastVersionRelease = false;
     public static JSONArray allJson;
 
@@ -31,24 +32,34 @@ public class UpdateChecker {
             Utils.debug("[UpdateChecker] loadUpdateChecker(): page loaded!");
 
 
-            lastVersionTag = allJson.getJSONObject(0).getString("tag_name");
+            lastVersionTag = Integer.parseInt(allJson.getJSONObject(0).getString("tag_name"));
             lastVersionName = allJson.getJSONObject(0).getString("name");
             isLastVersionRelease = !allJson.getJSONObject(0).getBoolean("prerelease");
-            lastVersionDownloadURL = allJson.getJSONObject(0).getString("html_url");
+            lastVersionDownloadPageURL = allJson.getJSONObject(0).getString("html_url");
+            lastVersionDownloadURL = allJson
+                    .getJSONObject(0).getJSONArray("assets")
+                    .getJSONObject(0).getString("browser_download_url");
 
             Utils.debug("[UpdateChecker] loadUpdateChecker(): last version: lastVersionTag="+lastVersionTag+"; lastVersionName"+lastVersionName+"; isLastVersionRelease"+isLastVersionRelease
-                +"; lastVersionDownloadURL="+lastVersionDownloadURL);
+                +"; lastVersionDownloadURL="+lastVersionDownloadPageURL);
 
-            if (!lastVersionTag.equals(thisVersionTag)) {
+            if (lastVersionTag > thisVersionTag) {
                 Utils.debug("[UpdateChecker] loadUpdateChecker(): update detected!");
-
-
                 Utils.print("### UPDATE CHECKER ###");
                 Utils.print("## OpenDiscordAuth new version!");
                 Utils.print("## ");
                 Utils.print("## Current: (" + thisVersionName + ") (#" + thisVersionTag + ")");
                 Utils.print("## Last: (" + lastVersionName + ") (#" + lastVersionTag + ")");
-                Utils.print("## Download URL: " + lastVersionDownloadURL);
+                Utils.print("## Download URL: " + lastVersionDownloadPageURL);
+
+                if (Config.enablePluginAutoUpdate && isLastVersionRelease) {
+                    Utils.print("## Downloading update...");
+                    boolean state = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
+                    Utils.print("## Downloading "
+                            + (state ? "complete! Reload plugins (/reload) to apply changes" : "failed!")
+                    );
+                }
+
                 Utils.print("## ");
             }
 
