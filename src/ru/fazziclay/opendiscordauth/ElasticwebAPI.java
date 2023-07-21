@@ -59,6 +59,11 @@ public class ElasticwebAPI {
 
         Bukkit.getLogger().info("Getting server dns entry");
         JSONObject entry = ElasticwebAPI.getDnsEntryFromList();
+
+        if (entry == null) {
+            return Utils.NULL_IP;
+        }
+
         Bukkit.getLogger().info("Getting server dns entry response: " + entry.toString());
 
         return (String) entry.get("value");
