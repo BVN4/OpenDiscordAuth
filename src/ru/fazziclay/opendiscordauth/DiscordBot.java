@@ -105,14 +105,15 @@ public class DiscordBot extends ListenerAdapter {
                     event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
                 } catch (CommandException e) {
                     event.getHook().editOriginal(
-                        e.getMessage()
-                            + "\n" + e.getCause()
-                            + "\n" + Arrays.toString(e.getSuppressed())
-                            + "\n" + e.getClass()
-                            + "\n" + Arrays.toString(e.getStackTrace())
+                          e.getMessage()
+                              + "\n" + e.getCause()
+                              + "\n" + Arrays.toString(e.getSuppressed())
+                              + "\n" + e.getClass()
+                              + "\n" + Arrays.toString(e.getStackTrace())
                     ).queue();
                 }
             });
+
         } else if (event.getName().equals("get-ip")) {
             event.deferReply().queue();
 

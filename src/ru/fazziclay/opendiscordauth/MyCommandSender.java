@@ -3,11 +3,12 @@ package ru.fazziclay.opendiscordauth;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.RemoteConsoleCommandSender;
-import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -53,6 +54,16 @@ public class MyCommandSender implements RemoteConsoleCommandSender {
     @Override
     public @NotNull Set<PermissionAttachmentInfo> getEffectivePermissions() {
         return null;
+    }
+
+    @Override
+    public net.kyori.adventure.util.@NotNull TriState permissionValue(@NotNull Permission permission) {
+        return RemoteConsoleCommandSender.super.permissionValue(permission);
+    }
+
+    @Override
+    public net.kyori.adventure.util.@NotNull TriState permissionValue(@NotNull String permission) {
+        return RemoteConsoleCommandSender.super.permissionValue(permission);
     }
 
     @Override
@@ -136,6 +147,36 @@ public class MyCommandSender implements RemoteConsoleCommandSender {
     @Override
     public @NotNull Spigot spigot() {
         return null;
+    }
+
+    @Override
+    public @NotNull Component name() {
+        return Component.text("CustomSender");
+    }
+
+    @Override
+    public void sendMessage(net.kyori.adventure.identity.@NotNull Identity identity, net.kyori.adventure.text.@NotNull Component message, net.kyori.adventure.audience.@NotNull MessageType type) {
+        RemoteConsoleCommandSender.super.sendMessage(identity, message, type);
+    }
+
+    @Override
+    public void sendRichMessage(@NotNull String message) {
+        RemoteConsoleCommandSender.super.sendRichMessage(message);
+    }
+
+    @Override
+    public void sendPlainMessage(@NotNull String message) {
+        RemoteConsoleCommandSender.super.sendPlainMessage(message);
+    }
+
+    @Override
+    public void sendMessage(net.md_5.bungee.api.chat.@NotNull BaseComponent component) {
+        RemoteConsoleCommandSender.super.sendMessage(component);
+    }
+
+    @Override
+    public void sendMessage(net.md_5.bungee.api.chat.@NotNull BaseComponent... components) {
+        RemoteConsoleCommandSender.super.sendMessage(components);
     }
 
     private String formatMessage(String msg) {
