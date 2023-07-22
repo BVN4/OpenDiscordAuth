@@ -100,19 +100,20 @@ public class DiscordBot extends ListenerAdapter {
 
             // Обработка команды и добавление её задачи в планировщик основного потока
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                //try {
+                try {
                     boolean status = Bukkit.dispatchCommand(sender, command);
                     event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
-                // } catch (CommandException e) {
-                  //  event.getHook().editOriginal(
-                  //      e.getMessage()
-                  //          + "\n" + e.getCause()
-                  //          + "\n" + Arrays.toString(e.getSuppressed())
-                  //          + "\n" + e.getClass()
-                  //          + "\n" + Arrays.toString(e.getStackTrace())
-                  //  ).queue();
-                //}
+                } catch (CommandException e) {
+                    event.getHook().editOriginal(
+                          e.getMessage()
+                              + "\n" + e.getCause()
+                              + "\n" + Arrays.toString(e.getSuppressed())
+                              + "\n" + e.getClass()
+                              + "\n" + Arrays.toString(e.getStackTrace())
+                    ).queue();
+                }
             });
+
         } else if (event.getName().equals("get-ip")) {
             event.deferReply().queue();
 
