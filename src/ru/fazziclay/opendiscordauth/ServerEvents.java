@@ -116,10 +116,17 @@ public class ServerEvents implements Listener {
         String message = event.getMessage();
         Player player = event.getPlayer();
         Account account = Objects.requireNonNull(Account.getByValue(0, player.getName()));
+        String name = account.effectiveNick;
+
+        if (Config.chatPrefix != null) {
+            if (!Config.chatPrefix.startsWith("ENTER")) {
+                name = String.format("[%s] %s", Config.chatPrefix, account.effectiveNick);
+            }
+        }
 
         DiscordBot.webhook.sendMessage(
             message,
-            String.format("[%s] %s", Config.chatPrefix, account.effectiveNick),
+            name,
             account.effectiveAvatarUrl
         );
     }
