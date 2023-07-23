@@ -33,8 +33,9 @@ public class DiscordBot extends ListenerAdapter {
         User author              = event.getMessage().getAuthor();
         MessageChannel channel   = event.getMessage().getChannel();
 
+        // Проверка на авторство сообщений. Отбрасование сообщений автор которых этот бот или же его вебхук
         if (
-                author.getId().equals(DiscordBot.webhook.getWebhook().getId()) || // Проверка на авторство сообщений. Отбрасование сообщений автор которых этот бот или же его вебхук
+                author.getId().equals(DiscordBot.webhook.getWebhook().getId()) ||
                 author.getId().equals(DiscordBot.bot.getSelfUser().getId())
         ) {
             return;
