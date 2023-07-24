@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
@@ -194,9 +195,12 @@ public class Utils {
     }
 
     public static String getMemberHexColor(Member member) {
-        return "#"+Integer.toHexString(
-            Objects.requireNonNull(Objects.requireNonNull(member).getColor()).getRGB()
-        ).substring(2);
+        Color color = Objects.requireNonNull(member).getColor();
+        if (color == null) {
+            color = Color.WHITE;
+        }
+
+        return "#"+Integer.toHexString(color.getRGB()).substring(2);
     }
 
     public static String getMessageForBroadcast(MessageReceivedEvent event, String prefix) {

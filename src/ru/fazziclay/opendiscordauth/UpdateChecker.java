@@ -9,8 +9,8 @@ import java.util.Scanner;
 public class UpdateChecker {
 
     // THIS
-    public static int thisVersionTag = 15;
-    public static String thisVersionName = "0.8.5";
+    public static int thisVersionTag = 16;
+    public static String thisVersionName = "0.8.6";
     public static boolean isThisVersionRelease = false;
 
     // LAST
