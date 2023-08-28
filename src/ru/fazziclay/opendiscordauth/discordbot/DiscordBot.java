@@ -1,41 +1,51 @@
-package ru.fazziclay.opendiscordauth;
+package ru.fazziclay.opendiscordauth.discordbot;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandException;
-
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import ru.fazziclay.opendiscordauth.*;
+import ru.fazziclay.opendiscordauth.runcommand.RunCommandController;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
 public class DiscordBot extends ListenerAdapter {
 
     public static JDA bot;
-    public static WebhookClient webhook;
+    public static ru.fazziclay.opendiscordauth.WebhookClient webhook;
     public static String serverIp;
+
+    protected RunCommandController rc;
+
+    public DiscordBot() {
+        this.rc = new RunCommandController();
+    }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        Utils.debug("[DiscordBot] onMessageReceived(): message="+event.getMessage().getContentRaw());
+        Utils.debug("[DiscordBot] onMessageReceived(): message=" + event.getMessage().getContentRaw());
 
-        String content           = event.getMessage().getContentRaw();
-        User author              = event.getMessage().getAuthor();
-        MessageChannel channel   = event.getMessage().getChannel();
+        String content = event.getMessage().getContentRaw();
+        User author = event.getMessage().getAuthor();
+        MessageChannel channel = event.getMessage().getChannel();
 
         // Проверка на авторство сообщений. Отбрасование сообщений автор которых этот бот или же его вебхук
         if (
-                author.getId().equals(DiscordBot.webhook.getWebhook().getId()) ||
+            author.getId().equals(DiscordBot.webhook.getWebhook().getId()) ||
                 author.getId().equals(DiscordBot.bot.getSelfUser().getId())
         ) {
             return;
@@ -60,7 +70,7 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         TempCode tempCode = TempCode.getByValue(0, content);
-        Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode="+tempCode);
+        Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode=" + tempCode);
 
         if (tempCode != null) {
             Account account = Account.getByValue(0, tempCode.ownerNickname);
@@ -87,35 +97,12 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     @Override
-    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 
         if (event.getName().equals("rc")) {
-            MyCommandSender sender = new MyCommandSender(event);
-            String command = Objects.requireNonNull(event.getOption("command")).getAsString();
-            Bukkit.getLogger().info("Command used by " + event.getUser().getAsTag() + ": /" + command);
-            if (!Config.opUserIdList.contains(event.getUser().getId())) {
-                event.reply(Config.messageCommandMissingPermissions).setEphemeral(true).queue();
-                return;
-            }
-            event.deferReply().queue();
-
-            // Обработка команды и добавление её задачи в планировщик основного потока
-            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
-                try {
-                    boolean status = Bukkit.dispatchCommand(sender, command);
-                    event.getHook().editOriginal(status ? Config.messageCommandSuccess : Config.messageCommandError).queue();
-                } catch (CommandException e) {
-                    event.getHook().editOriginal(
-                          e.getMessage()
-                              + "\n" + e.getCause()
-                              + "\n" + Arrays.toString(e.getSuppressed())
-                              + "\n" + e.getClass()
-                              + "\n" + Arrays.toString(e.getStackTrace())
-                    ).queue();
-                }
-            });
-
+            rc.eventHandle(event);
         } else if (event.getName().equals("get-ip")) {
+            // TODO: need refactor for discordbot.Controller
             event.deferReply().queue();
 
             String ip = Utils.getGlobalIp();
@@ -136,17 +123,18 @@ public class DiscordBot extends ListenerAdapter {
                         ),
                         !ip.equals(dnsIp)
                     )
-                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
+                        + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
             } else {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
             }
 
-            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
+            if (!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
                 DiscordBot.checkIpUpdate();
             }
         }
     }
+
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         Bukkit.getLogger().info(DiscordBot.bot.getSelfUser().getAsTag());
@@ -163,7 +151,7 @@ public class DiscordBot extends ListenerAdapter {
             Config.domainProviderDomainName
         );
 
-        for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
+        for (Webhook webhook : Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
             if (webhook.getName().equals(subname)) {
                 w = webhook;
                 break;
@@ -207,10 +195,10 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     private static void updateApplicationCommands() {
-        CommandData rc = new CommandData("rc", "Run command")
+        SlashCommandData rc = Commands.slash("rc", "Run command")
             .addOption(OptionType.STRING, "command", "Minecraft command", true);
 
-        CommandData get_ip = new CommandData("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
+        SlashCommandData get_ip = Commands.slash("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
 
         DiscordBot.bot.updateCommands()
             .addCommands(rc)

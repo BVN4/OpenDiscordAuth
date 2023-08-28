@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class Account {
     public static void create(User ownerDiscord, String ownerNickname) {
         Utils.debug("[Account] create()");
 
-        String discordNickname = ownerDiscord.getAsTag();
+        String discordNickname = ownerDiscord.getName();
         Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
 
         Account account = new Account(ownerDiscord.getId(), ownerNickname, true);

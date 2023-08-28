@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
 
 public class Main extends JavaPlugin {
 
@@ -71,12 +72,14 @@ public class Main extends JavaPlugin {
     private static void loadDiscordBot() throws Exception { // Загрузка бота
         Utils.debug("[Main] loadDiscordBot()");
 
+        DiscordBot bot = new DiscordBot();
+
         DiscordBot.bot = JDABuilder.createDefault(Config.discordBotToken)
             .setChunkingFilter(ChunkingFilter.ALL)
             .setMemberCachePolicy(MemberCachePolicy.ALL)
             .enableIntents(GatewayIntent.GUILD_PRESENCES)
             .enableIntents(GatewayIntent.GUILD_MEMBERS)
-            .addEventListeners(new DiscordBot())
+            .addEventListeners(bot)
             .build();
 
         DiscordBot.bot.awaitReady();
