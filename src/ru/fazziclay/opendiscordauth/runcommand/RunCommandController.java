@@ -91,4 +91,5 @@ public class RunCommandController extends Controller {
             .replace("§e", "\u001B[0;93m")
             .replace("§f", "\u001B[0;97m");
     }
+
 }

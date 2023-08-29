@@ -91,4 +91,5 @@ public abstract class ConsoleCommandSenderBase implements ConsoleCommandSender {
     public void sendRawMessage(@NotNull String message) {
         consoleSender.sendRawMessage(message);
     }
+
 }

@@ -52,4 +52,5 @@ public class RunCommandSender extends ConsoleCommandSenderBase implements Consol
         append(message);
         runCallback();
     }
+
 }
