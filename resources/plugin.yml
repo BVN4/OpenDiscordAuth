@@ -1,6 +1,6 @@
 name: OpenDiscordAuth
 main: ru.fazziclay.opendiscordauth.Main
-version: 0.8.1
+version: 1.8.7
 website: "https://github.com/BVN4/OpenDiscordAuth/"
 authors: ["https://github.com/BVN4", "https://github.com/fazziclay/", "https://github.com/TheKing-OfTime"]
 load: STARTUP

@@ -30,7 +30,7 @@ public class RunCommandController extends Controller {
         String command = Objects.requireNonNull(event.getOption("command")).getAsString();
         User user = event.getUser();
 
-        logger.info("Command used by " + user.getAsTag() + ": /" + command);
+        logger.info("Command used by " + user.getName() + ": /" + command);
         if (!Config.opUserIdList.contains(user.getId())) {
             event.reply(Config.messageCommandMissingPermissions)
                 .setEphemeral(true)
@@ -39,7 +39,6 @@ public class RunCommandController extends Controller {
         }
 
         event.deferReply().queue();
-        logger.info("Debug");
 
         // Обработка команды и добавление её задачи в планировщик основного потока
         scheduler.runTask(Main.getPlugin(Main.class), () -> {

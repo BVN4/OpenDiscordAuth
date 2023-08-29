@@ -1,10 +1,9 @@
 package ru.fazziclay.opendiscordauth.runcommand;
 
-import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RunCommandSender extends ConsoleCommandSenderBase implements ConsoleCommandSender, OperatorPermissible {
+public class RunCommandSender extends ConsoleCommandSenderBase implements OperatorPermissible {
 
     protected @Nullable Runnable callback;
 

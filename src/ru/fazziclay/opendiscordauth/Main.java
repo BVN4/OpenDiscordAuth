@@ -46,7 +46,7 @@ public class Main extends JavaPlugin {
         try {
             loadDiscordBot();
             loadAccounts();
-            UpdateChecker.loadUpdateChecker();
+            UpdateChecker.loadUpdateChecker(getDescription().getVersion());
             Bukkit.getPluginManager().registerEvents(new ServerEvents(), this);
 
         } catch (Exception e) {
