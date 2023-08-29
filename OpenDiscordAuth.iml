@@ -23,5 +23,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="libs" level="project" />
     <orderEntry type="library" name="spigot-1.17.1" level="project" />
+    <orderEntry type="library" name="JDA-5.0.0-beta.13-withDependencies" level="project" />
   </component>
 </module>
