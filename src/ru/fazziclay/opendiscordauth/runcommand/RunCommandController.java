@@ -53,14 +53,16 @@ public class RunCommandController extends Controller {
                 sender.setCallback(() -> {
                     String msg = formatMessage(sender.getMessage());
 
-                    FileUpload file = FileUpload.fromData(
-                        new ByteArrayInputStream(msg.getBytes()),
-                        command + ".ansi"
-                    );
+                    if (!event.getHook().isExpired()) {
+                        FileUpload file = FileUpload.fromData(
+                            new ByteArrayInputStream(msg.getBytes()),
+                            command + ".ansi"
+                        );
 
-                    event.getHook()
-                        .editOriginalAttachments(file)
-                        .queue();
+                        event.getHook()
+                            .editOriginalAttachments(file)
+                            .queue();
+                    }
                 });
 
                 sender.runCallback();
