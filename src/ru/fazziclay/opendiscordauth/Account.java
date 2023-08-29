@@ -51,7 +51,7 @@ public class Account {
     public static void create(User ownerDiscord, String ownerNickname) {
         Utils.debug("[Account] create()");
 
-        String discordNickname = ownerDiscord.getName();
+        String discordNickname = ownerDiscord.getAsTag();
         Utils.sendMessage(Bukkit.getPlayer(ownerNickname), Config.messageAccountCreatingConfirming.replace("$discord", discordNickname).replace("$nickname", ownerNickname));
 
         Account account = new Account(ownerDiscord.getId(), ownerNickname, true);

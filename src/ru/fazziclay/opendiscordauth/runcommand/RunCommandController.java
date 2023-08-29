@@ -52,7 +52,6 @@ public class RunCommandController extends Controller {
 
                 sender.setCallback(() -> {
                     String msg = formatMessage(sender.getMessage());
-                    logger.info(sender.getMessage());
 
                     FileUpload file = FileUpload.fromData(
                         new ByteArrayInputStream(msg.getBytes()),

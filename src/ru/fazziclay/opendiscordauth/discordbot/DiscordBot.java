@@ -26,7 +26,7 @@ import java.util.Objects;
 public class DiscordBot extends ListenerAdapter {
 
     public static JDA bot;
-    public static ru.fazziclay.opendiscordauth.WebhookClient webhook;
+    public static WebhookClient webhook;
     public static String serverIp;
 
     protected RunCommandController rc;
@@ -37,15 +37,15 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        Utils.debug("[DiscordBot] onMessageReceived(): message=" + event.getMessage().getContentRaw());
+        Utils.debug("[DiscordBot] onMessageReceived(): message="+event.getMessage().getContentRaw());
 
-        String content = event.getMessage().getContentRaw();
-        User author = event.getMessage().getAuthor();
-        MessageChannel channel = event.getMessage().getChannel();
+        String content           = event.getMessage().getContentRaw();
+        User author              = event.getMessage().getAuthor();
+        MessageChannel channel   = event.getMessage().getChannel();
 
         // Проверка на авторство сообщений. Отбрасование сообщений автор которых этот бот или же его вебхук
         if (
-            author.getId().equals(DiscordBot.webhook.getWebhook().getId()) ||
+                author.getId().equals(DiscordBot.webhook.getWebhook().getId()) ||
                 author.getId().equals(DiscordBot.bot.getSelfUser().getId())
         ) {
             return;
@@ -70,7 +70,7 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         TempCode tempCode = TempCode.getByValue(0, content);
-        Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode=" + tempCode);
+        Utils.debug("[DiscordBot] onMessageReceived(): (check tempCode) tempCode="+tempCode);
 
         if (tempCode != null) {
             Account account = Account.getByValue(0, tempCode.ownerNickname);
@@ -123,13 +123,13 @@ public class DiscordBot extends ListenerAdapter {
                         ),
                         !ip.equals(dnsIp)
                     )
-                        + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
+                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
                 ).queue();
             } else {
                 event.getHook().editOriginal("Неудалось получить IP").queue();
             }
 
-            if (!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
+            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
                 DiscordBot.checkIpUpdate();
             }
         }
@@ -151,7 +151,7 @@ public class DiscordBot extends ListenerAdapter {
             Config.domainProviderDomainName
         );
 
-        for (Webhook webhook : Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
+        for (Webhook webhook: Objects.requireNonNull(channel).retrieveWebhooks().complete()) {
             if (webhook.getName().equals(subname)) {
                 w = webhook;
                 break;
