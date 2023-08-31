@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
 import de.jeter.chatex.api.events.PlayerUsesGlobalChatEvent;
+import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
 
 import java.util.Objects;
 

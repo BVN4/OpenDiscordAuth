@@ -1,9 +1,11 @@
 package ru.fazziclay.opendiscordauth;
-import net.dv8tion.jda.api.entities.User;
+
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
 
 import java.util.ArrayList;
 import java.util.List;

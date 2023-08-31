@@ -4,11 +4,11 @@
     <root id="archive" name="OpenDiscordAuth.jar">
       <element id="module-output" name="OpenDiscordAuth" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/json-20201115.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/JDA-4.4.0_350-withDependencies.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/httpclient5-5.2.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/httpclient5-fluent-5.2.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/httpcore5-h2-5.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/httpcore5-5.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/JDA-5.0.0-beta.13-withDependencies.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
