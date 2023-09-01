@@ -43,6 +43,7 @@ public class CheckUpdatesController extends Controller {
             status
                 ? "✅ Обновление загружено\nℹ Перезапустите сервер для применения обновлений"
                 : "⛔ Не удалось загрузить обновление";
+        if (status) UpdateChecker.isAwaitingForRestart = true;
 
         event.getHook().editOriginal(substring + downloadStatusString).queue();
     }
