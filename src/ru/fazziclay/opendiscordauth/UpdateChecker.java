@@ -54,7 +54,7 @@ public class UpdateChecker {
                     Utils.print("## Downloading update...");
                     boolean state = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
                     Utils.print("## Downloading "
-                        + (state ? "complete! Reload plugins (/reload) to apply changes" : "failed!")
+                        + (state ? "complete! Restart server (/restart) to apply changes" : "failed!")
                     );
                 }
 
