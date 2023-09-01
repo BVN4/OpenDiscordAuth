@@ -17,7 +17,9 @@ public class UpdateChecker {
     public static Version lastVersion;
     public static String lastVersionDownloadURL = "null";
     public static String lastVersionDownloadPageURL = "null";
+    public static float lastVersionSize = 0;
     public static boolean isLastVersionRelease = false;
+    public static boolean isAwaitingForRestart = false;
     public static JSONArray allJson;
 
     public static void loadUpdateChecker(String pluginVersion) {
@@ -25,6 +27,28 @@ public class UpdateChecker {
 
         thisVersion = Version.parse(pluginVersion);
 
+        if (checkUpdates()) {
+            Utils.debug("[UpdateChecker] loadUpdateChecker(): update detected!");
+            Utils.print("### UPDATE CHECKER ###");
+            Utils.print("## OpenDiscordAuth new version!");
+            Utils.print("## ");
+            Utils.print("## Current: " + thisVersion.toString());
+            Utils.print("## Last: " + lastVersion.toString());
+            Utils.print("## Download URL: " + lastVersionDownloadPageURL);
+
+            if (Config.enablePluginAutoUpdate && isLastVersionRelease) {
+                Utils.print("## Downloading update...");
+                boolean status = UpdateChecker.update();
+                Utils.print("## Downloading "
+                    + (status ? "complete! Restart server (/restart) to apply changes" : "failed!")
+                );
+            }
+
+            Utils.print("## ");
+        }
+    }
+
+    public static boolean checkUpdates() {
         try {
             InputStream inputStream = new URL("https://api.github.com/repos/BVN4/OpenDiscordAuth/releases").openStream();
             Scanner scanner = new Scanner(inputStream);
@@ -38,31 +62,24 @@ public class UpdateChecker {
             isLastVersionRelease = !release.getBoolean("prerelease");
             lastVersionDownloadPageURL = release.getString("html_url");
             lastVersionDownloadURL = release.getJSONArray("assets")
-                .getJSONObject(0)
-                .getString("browser_download_url");
+                    .getJSONObject(0)
+                    .getString("browser_download_url");
+            lastVersionSize = release.getJSONArray("assets")
+                    .getJSONObject(0)
+                    .getFloat("size");
 
-            if (thisVersion.compareTo(lastVersion) < 0) {
-                Utils.debug("[UpdateChecker] loadUpdateChecker(): update detected!");
-                Utils.print("### UPDATE CHECKER ###");
-                Utils.print("## OpenDiscordAuth new version!");
-                Utils.print("## ");
-                Utils.print("## Current: " + thisVersion.toString());
-                Utils.print("## Last: " + lastVersion.toString());
-                Utils.print("## Download URL: " + lastVersionDownloadPageURL);
-
-                if (Config.enablePluginAutoUpdate && isLastVersionRelease) {
-                    Utils.print("## Downloading update...");
-                    boolean state = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
-                    Utils.print("## Downloading "
-                        + (state ? "complete! Reload plugins (/reload) to apply changes" : "failed!")
-                    );
-                }
-
-                Utils.print("## ");
-            }
+            return thisVersion.compareTo(lastVersion) < 0;
 
         } catch (Exception e) {
-            Utils.debug("[UpdateChecker] loadUpdateChecker(): Error. e.toString()=" + e);
+            Utils.debug("[UpdateChecker] checkUpdates(): Error. e.toString()=" + e);
+            return false;
         }
+    }
+
+    public static boolean update() {
+        UpdateChecker.isAwaitingForRestart = true;
+        boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
+        UpdateChecker.isAwaitingForRestart = status;
+        return status;
     }
 }

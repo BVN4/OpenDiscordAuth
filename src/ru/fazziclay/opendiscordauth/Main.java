@@ -79,6 +79,9 @@ public class Main extends JavaPlugin {
             .setMemberCachePolicy(MemberCachePolicy.ALL)
             .enableIntents(GatewayIntent.GUILD_PRESENCES)
             .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+            .disableIntents(GatewayIntent.GUILD_MESSAGE_TYPING)
+            .disableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING)
             .addEventListeners(bot)
             .build();
 

@@ -18,8 +18,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.fazziclay.opendiscordauth.*;
+import ru.fazziclay.opendiscordauth.checkupdates.CheckUpdatesController;
+import ru.fazziclay.opendiscordauth.getip.GetIpController;
 import ru.fazziclay.opendiscordauth.runcommand.RunCommandController;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -30,9 +33,13 @@ public class DiscordBot extends ListenerAdapter {
     public static String serverIp;
 
     protected RunCommandController rc;
+    protected GetIpController get_ip;
+    protected CheckUpdatesController check_updates;
 
     public DiscordBot() {
         this.rc = new RunCommandController();
+        this.get_ip = new GetIpController();
+        this.check_updates = new CheckUpdatesController();
     }
 
     @Override
@@ -99,39 +106,10 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 
-        if (event.getName().equals("rc")) {
-            rc.eventHandle(event);
-        } else if (event.getName().equals("get-ip")) {
-            // TODO: need refactor for discordbot.Controller
-            event.deferReply().queue();
-
-            String ip = Utils.getGlobalIp();
-            String dnsIp = ElasticwebAPI.getDnsIp();
-            int port = Bukkit.getServer().getPort();
-
-            if (!ip.equals(Utils.NULL_IP)) {
-                Bukkit.getLogger().info(ip);
-                event.getHook().editOriginal(
-                    Utils.getCrossed(
-                        String.format(
-                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`\n",
-                            Config.domainProviderServerDomainSubName,
-                            Config.domainProviderDomainName,
-                            port,
-                            dnsIp,
-                            port
-                        ),
-                        !ip.equals(dnsIp)
-                    )
-                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
-                ).queue();
-            } else {
-                event.getHook().editOriginal("Неудалось получить IP").queue();
-            }
-
-            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
-                DiscordBot.checkIpUpdate();
-            }
+        switch (event.getName()) {
+            case ("rc") -> rc.eventHandle(event);
+            case ("get-ip") -> get_ip.eventHandle(event);
+            case ("check-updates") -> check_updates.eventHandle(event);
         }
     }
 
@@ -199,14 +177,16 @@ public class DiscordBot extends ListenerAdapter {
             .addOption(OptionType.STRING, "command", "Minecraft command", true);
 
         SlashCommandData get_ip = Commands.slash("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
+        SlashCommandData check_updates = Commands.slash("check-updates", "Проверяет наличие обновлений плагина");
 
         DiscordBot.bot.updateCommands()
             .addCommands(rc)
             .addCommands(get_ip)
+            .addCommands(check_updates)
             .queue();
     }
 
-    private static String checkIpUpdate() {
+    public static String checkIpUpdate() {
         String ip = Utils.getGlobalIp();
         String dnsIp = ElasticwebAPI.getDnsIp();
 
