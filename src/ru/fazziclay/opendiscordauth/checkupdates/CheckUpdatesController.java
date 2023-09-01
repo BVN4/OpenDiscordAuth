@@ -23,9 +23,9 @@ public class CheckUpdatesController extends Controller {
             return;
         }
 
-        event.getHook().editOriginal("⌛ Поиск обновлений...\n⬛ Загрузка обновления").queue();
+        event.getHook().editOriginal("⌛ Поиск обновлений...").queue();
         if (!UpdateChecker.checkUpdates()) {
-            event.getHook().editOriginal("✅ Обновления не найдены\n⛔ Загрузка отменена").queue();
+            event.getHook().editOriginal("✅ Обновления не найдены").queue();
             return;
         }
 
