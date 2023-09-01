@@ -18,6 +18,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ru.fazziclay.opendiscordauth.*;
+import ru.fazziclay.opendiscordauth.checkupdates.CheckUpdatesController;
+import ru.fazziclay.opendiscordauth.getip.GetIpController;
 import ru.fazziclay.opendiscordauth.runcommand.RunCommandController;
 
 import java.math.BigDecimal;
@@ -31,9 +33,13 @@ public class DiscordBot extends ListenerAdapter {
     public static String serverIp;
 
     protected RunCommandController rc;
+    protected GetIpController get_ip;
+    protected CheckUpdatesController check_updates;
 
     public DiscordBot() {
         this.rc = new RunCommandController();
+        this.get_ip = new GetIpController();
+        this.check_updates = new CheckUpdatesController();
     }
 
     @Override
@@ -102,63 +108,8 @@ public class DiscordBot extends ListenerAdapter {
 
         switch (event.getName()) {
             case ("rc") -> rc.eventHandle(event);
-            case ("get-ip") -> {
-                // TODO: need refactor for discordbot.Controller
-                event.deferReply().queue();
-                String ip = Utils.getGlobalIp();
-                String dnsIp = ElasticwebAPI.getDnsIp();
-                int port = Bukkit.getServer().getPort();
-                if (!ip.equals(Utils.NULL_IP)) {
-                    Bukkit.getLogger().info(ip);
-                    event.getHook().editOriginal(
-                            Utils.getCrossed(
-                                    String.format(
-                                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`\n",
-                                            Config.domainProviderServerDomainSubName,
-                                            Config.domainProviderDomainName,
-                                            port,
-                                            dnsIp,
-                                            port
-                                    ),
-                                    !ip.equals(dnsIp)
-                            )
-                                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
-                    ).queue();
-                } else {
-                    event.getHook().editOriginal("Неудалось получить IP").queue();
-                }
-                if (!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
-                    DiscordBot.checkIpUpdate();
-                }
-            }
-            case("check-updates") -> {
-                event.deferReply().queue();
-
-                if(UpdateChecker.isAwaitingForRestart) {
-                    event.getHook().editOriginal("✅ Обновление уже готово. Ожидание перезапуска сервера").queue();
-                    return;
-                }
-
-                event.getHook().editOriginal("⌛ Поиск обновлений...\n⬛ Загрузка обновления").queue();
-                if (!UpdateChecker.checkUpdates()) {
-                    event.getHook().editOriginal("✅ Обновления не найдены\n⛔ Загрузка отменена").queue();
-                    return;
-                }
-
-                BigDecimal fileSize = new BigDecimal(UpdateChecker.lastVersionSize / 1048576);
-                String substring = String.format(
-                        "✅ Обновление найдено `%s -> %s (%sMB)`\n",
-                        UpdateChecker.thisVersion,
-                        UpdateChecker.lastVersion,
-                        fileSize.setScale(2, BigDecimal.ROUND_HALF_UP)
-                );
-
-                event.getHook().editOriginal(substring + "⌛ Загрузка обновления...").queue();
-                boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", UpdateChecker.lastVersionDownloadURL);
-                String downloadStatusString = status ? "✅ Обновление загружено\nℹ Перезапустите сервер для применения обновлений" : "⛔ Не удалось загрузить обновление";
-
-                event.getHook().editOriginal(substring + downloadStatusString).queue();
-            }
+            case ("get-ip") -> get_ip.eventHandle(event);
+            case ("check-updates") -> check_updates.eventHandle(event);
         }
     }
 
@@ -235,7 +186,7 @@ public class DiscordBot extends ListenerAdapter {
             .queue();
     }
 
-    private static String checkIpUpdate() {
+    public static String checkIpUpdate() {
         String ip = Utils.getGlobalIp();
         String dnsIp = ElasticwebAPI.getDnsIp();
 

@@ -252,29 +252,6 @@ public class Utils {
         return true;
     }
 
-    public static boolean downloadFile(String path, String url, pbDrawerFunc progressBarDrawer) {
-        try {
-            java.net.URL website = new java.net.URL(url);
-            java.net.URLConnection conn = website.openConnection();
-            long bytesFull = conn.getContentLength();
-            java.io.InputStream ins = conn.getInputStream();
-            FileOutputStream fos = new FileOutputStream(path);
-
-            while (ins.available() > 0) {
-                fos.write(ins.read());
-                progressBarDrawer.draw(ins.available() - bytesFull, bytesFull);
-            }
-
-            ins.close();
-            fos.close();
-
-        } catch (IOException e) {
-            return false;
-        }
-        UpdateChecker.isAwaitingForRestart = true;
-        return true;
-    }
-
     public static boolean isFileExist(String path) {
         File file = new File(path);
         return file.isFile();
