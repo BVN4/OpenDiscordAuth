@@ -99,38 +99,36 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 
-        if (event.getName().equals("rc")) {
-            rc.eventHandle(event);
-        } else if (event.getName().equals("get-ip")) {
-            // TODO: need refactor for discordbot.Controller
-            event.deferReply().queue();
-
-            String ip = Utils.getGlobalIp();
-            String dnsIp = ElasticwebAPI.getDnsIp();
-            int port = Bukkit.getServer().getPort();
-
-            if (!ip.equals(Utils.NULL_IP)) {
-                Bukkit.getLogger().info(ip);
-                event.getHook().editOriginal(
-                    Utils.getCrossed(
-                        String.format(
-                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`\n",
-                            Config.domainProviderServerDomainSubName,
-                            Config.domainProviderDomainName,
-                            port,
-                            dnsIp,
-                            port
-                        ),
-                        !ip.equals(dnsIp)
-                    )
-                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
-                ).queue();
-            } else {
-                event.getHook().editOriginal("Неудалось получить IP").queue();
-            }
-
-            if(!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
-                DiscordBot.checkIpUpdate();
+        switch (event.getName()) {
+            case ("rc") -> rc.eventHandle(event);
+            case ("get-ip") -> {
+                // TODO: need refactor for discordbot.Controller
+                event.deferReply().queue();
+                String ip = Utils.getGlobalIp();
+                String dnsIp = ElasticwebAPI.getDnsIp();
+                int port = Bukkit.getServer().getPort();
+                if (!ip.equals(Utils.NULL_IP)) {
+                    Bukkit.getLogger().info(ip);
+                    event.getHook().editOriginal(
+                            Utils.getCrossed(
+                                    String.format(
+                                            "URL для подключения: `%s.%s:%d`\nDNS IP сервера `%s:%d`\n",
+                                            Config.domainProviderServerDomainSubName,
+                                            Config.domainProviderDomainName,
+                                            port,
+                                            dnsIp,
+                                            port
+                                    ),
+                                    !ip.equals(dnsIp)
+                            )
+                                    + String.format("Актуальное IP сервера `%s:%d`\n", ip, port)
+                    ).queue();
+                } else {
+                    event.getHook().editOriginal("Неудалось получить IP").queue();
+                }
+                if (!dnsIp.equals(ip) && !dnsIp.equals(Utils.NULL_IP)) {
+                    DiscordBot.checkIpUpdate();
+                }
             }
         }
     }
