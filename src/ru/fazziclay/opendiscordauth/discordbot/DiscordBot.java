@@ -130,6 +130,21 @@ public class DiscordBot extends ListenerAdapter {
                     DiscordBot.checkIpUpdate();
                 }
             }
+            case("check-updates") -> {
+                event.deferReply().queue();
+                event.getHook().editOriginal("⌛ Поиск обновлений...").queue();
+                if (!UpdateChecker.checkUpdates()) {
+                    event.getHook().editOriginal("✅ Обновления не найдены").queue();
+                    return;
+                }
+                event.getHook().editOriginal(
+                    String.format(
+                        "✅ Обновление найдено\n`%s` -> `%s`",
+                        UpdateChecker.thisVersion,
+                        UpdateChecker.lastVersion
+                    )
+                ).queue();
+            }
         }
     }
 
@@ -197,10 +212,12 @@ public class DiscordBot extends ListenerAdapter {
             .addOption(OptionType.STRING, "command", "Minecraft command", true);
 
         SlashCommandData get_ip = Commands.slash("get-ip", "Возвращает актуальный IP адресс сервера Minecraft");
+        SlashCommandData check_updates = Commands.slash("check-updates", "Проверяет наличие обновлений плагина");
 
         DiscordBot.bot.updateCommands()
             .addCommands(rc)
             .addCommands(get_ip)
+            .addCommands(check_updates)
             .queue();
     }
 
