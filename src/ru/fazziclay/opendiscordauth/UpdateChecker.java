@@ -17,8 +17,9 @@ public class UpdateChecker {
     public static Version lastVersion;
     public static String lastVersionDownloadURL = "null";
     public static String lastVersionDownloadPageURL = "null";
-    public static long lastVersionSize = 0;
+    public static float lastVersionSize = 0;
     public static boolean isLastVersionRelease = false;
+    public static boolean isAwaitingForRestart = false;
     public static JSONArray allJson;
 
     public static void loadUpdateChecker(String pluginVersion) {
@@ -65,7 +66,7 @@ public class UpdateChecker {
                     .getString("browser_download_url");
             lastVersionSize = release.getJSONArray("assets")
                     .getJSONObject(0)
-                    .getLong("size");
+                    .getFloat("size");
 
             return thisVersion.compareTo(lastVersion) < 0;
 

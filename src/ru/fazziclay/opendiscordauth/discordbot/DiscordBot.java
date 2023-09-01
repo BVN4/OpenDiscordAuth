@@ -133,6 +133,12 @@ public class DiscordBot extends ListenerAdapter {
             }
             case("check-updates") -> {
                 event.deferReply().queue();
+
+                if(UpdateChecker.isAwaitingForRestart) {
+                    event.getHook().editOriginal("ℹ Обновление уже готово. Ожидание перезапуска сервера").queue();
+                    return;
+                }
+
                 event.getHook().editOriginal("⌛ Поиск обновлений...\n⬛ Загрузка обновления").queue();
                 if (!UpdateChecker.checkUpdates()) {
                     event.getHook().editOriginal("✅ Обновления не найдены\n⛔ Загрузка отменена").queue();

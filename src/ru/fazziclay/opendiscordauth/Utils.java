@@ -248,6 +248,7 @@ public class Utils {
         } catch (IOException e) {
             return false;
         }
+        UpdateChecker.isAwaitingForRestart = true;
         return true;
     }
 
@@ -270,6 +271,7 @@ public class Utils {
         } catch (IOException e) {
             return false;
         }
+        UpdateChecker.isAwaitingForRestart = true;
         return true;
     }
 
