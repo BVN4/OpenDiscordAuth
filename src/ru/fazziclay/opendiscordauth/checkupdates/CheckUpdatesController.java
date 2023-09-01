@@ -38,12 +38,11 @@ public class CheckUpdatesController extends Controller {
         );
 
         event.getHook().editOriginal(substring + "⌛ Загрузка обновления...").queue();
-        boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", UpdateChecker.lastVersionDownloadURL);
+        boolean status = UpdateChecker.update();
         String downloadStatusString =
             status
                 ? "✅ Обновление загружено\nℹ Перезапустите сервер для применения обновлений"
                 : "⛔ Не удалось загрузить обновление";
-        if (status) UpdateChecker.isAwaitingForRestart = true;
 
         event.getHook().editOriginal(substring + downloadStatusString).queue();
     }

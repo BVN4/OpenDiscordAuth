@@ -38,11 +38,10 @@ public class UpdateChecker {
 
             if (Config.enablePluginAutoUpdate && isLastVersionRelease) {
                 Utils.print("## Downloading update...");
-                boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
+                boolean status = UpdateChecker.update();
                 Utils.print("## Downloading "
                     + (status ? "complete! Restart server (/restart) to apply changes" : "failed!")
                 );
-                if (status) UpdateChecker.isAwaitingForRestart = true;
             }
 
             Utils.print("## ");
@@ -75,5 +74,12 @@ public class UpdateChecker {
             Utils.debug("[UpdateChecker] checkUpdates(): Error. e.toString()=" + e);
             return false;
         }
+    }
+
+    public static boolean update() {
+        UpdateChecker.isAwaitingForRestart = true;
+        boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", lastVersionDownloadURL);
+        UpdateChecker.isAwaitingForRestart = status;
+        return status;
     }
 }
