@@ -17,6 +17,7 @@ public class UpdateChecker {
     public static Version lastVersion;
     public static String lastVersionDownloadURL = "null";
     public static String lastVersionDownloadPageURL = "null";
+    public static long lastVersionSize = 0;
     public static boolean isLastVersionRelease = false;
     public static JSONArray allJson;
 
@@ -62,6 +63,9 @@ public class UpdateChecker {
             lastVersionDownloadURL = release.getJSONArray("assets")
                     .getJSONObject(0)
                     .getString("browser_download_url");
+            lastVersionSize = release.getJSONArray("assets")
+                    .getJSONObject(0)
+                    .getLong("size");
 
             return thisVersion.compareTo(lastVersion) < 0;
 

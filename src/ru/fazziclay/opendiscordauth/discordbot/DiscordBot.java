@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.fazziclay.opendiscordauth.*;
 import ru.fazziclay.opendiscordauth.runcommand.RunCommandController;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -132,18 +133,25 @@ public class DiscordBot extends ListenerAdapter {
             }
             case("check-updates") -> {
                 event.deferReply().queue();
-                event.getHook().editOriginal("⌛ Поиск обновлений...").queue();
+                event.getHook().editOriginal("⌛ Поиск обновлений...\n⬛ Загрузка обновления").queue();
                 if (!UpdateChecker.checkUpdates()) {
-                    event.getHook().editOriginal("✅ Обновления не найдены").queue();
+                    event.getHook().editOriginal("✅ Обновления не найдены\n⛔ Загрузка отменена").queue();
                     return;
                 }
-                event.getHook().editOriginal(
-                    String.format(
-                        "✅ Обновление найдено\n`%s` -> `%s`",
+
+                BigDecimal fileSize = new BigDecimal(UpdateChecker.lastVersionSize / 1048576);
+                String substring = String.format(
+                        "✅ Обновление найдено `%s -> %s (%sMB)`\n",
                         UpdateChecker.thisVersion,
-                        UpdateChecker.lastVersion
-                    )
-                ).queue();
+                        UpdateChecker.lastVersion,
+                        fileSize.setScale(2, BigDecimal.ROUND_HALF_UP)
+                );
+
+                event.getHook().editOriginal(substring + "⌛ Загрузка обновления...").queue();
+                boolean status = Utils.downloadFile("./plugins/OpenDiscordAuth.jar", UpdateChecker.lastVersionDownloadURL);
+                String downloadStatusString = status ? "✅ Обновление загружено\nℹ Перезапустите сервер для применения обновлений" : "⛔ Не удалось загрузить обновление";
+
+                event.getHook().editOriginal(substring + downloadStatusString).queue();
             }
         }
     }
