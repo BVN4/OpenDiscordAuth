@@ -135,7 +135,7 @@ public class DiscordBot extends ListenerAdapter {
                 event.deferReply().queue();
 
                 if(UpdateChecker.isAwaitingForRestart) {
-                    event.getHook().editOriginal("ℹ Обновление уже готово. Ожидание перезапуска сервера").queue();
+                    event.getHook().editOriginal("✅ Обновление уже готово. Ожидание перезапуска сервера").queue();
                     return;
                 }
 
