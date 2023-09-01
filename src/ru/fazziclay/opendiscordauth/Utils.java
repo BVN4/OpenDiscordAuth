@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -242,6 +243,30 @@ public class Utils {
             java.nio.channels.ReadableByteChannel rbc = java.nio.channels.Channels.newChannel(website.openStream());
             FileOutputStream fos = new FileOutputStream(path);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            rbc.close();
+            fos.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean downloadFile(String path, String url, pbDrawerFunc progressBarDrawer) {
+        try {
+            java.net.URL website = new java.net.URL(url);
+            java.net.URLConnection conn = website.openConnection();
+            long bytesFull = conn.getContentLength();
+            java.io.InputStream ins = conn.getInputStream();
+            FileOutputStream fos = new FileOutputStream(path);
+
+            while (ins.available() > 0) {
+                fos.write(ins.read());
+                progressBarDrawer.draw(ins.available() - bytesFull, bytesFull);
+            }
+
+            ins.close();
+            fos.close();
+
         } catch (IOException e) {
             return false;
         }
