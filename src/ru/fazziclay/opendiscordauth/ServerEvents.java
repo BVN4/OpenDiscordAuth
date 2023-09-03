@@ -1,5 +1,6 @@
 package ru.fazziclay.opendiscordauth;
 
+import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import de.jeter.chatex.api.events.PlayerUsesGlobalChatEvent;
 import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.Objects;
 
@@ -54,7 +56,8 @@ public class ServerEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
-        DiscordBot.webhook.sendMessage(Config.messagePlayerJoined.replace("$discordname", nickname));
+        String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+        DiscordBot.webhook.sendMessage(Config.messagePlayerJoined.replace("$discordname", displayName));
         DiscordBot.updateOnlineStatus(player, true);
     }
 
@@ -65,6 +68,7 @@ public class ServerEvents implements Listener {
         Player player = event.getPlayer();
         String uuid = player.getUniqueId().toString();
         String nickname = player.getName();
+        String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
         String ip = Utils.getPlayerIp(player);
 
         TempCode tempCode = TempCode.getByValue(2, nickname);
@@ -77,7 +81,7 @@ public class ServerEvents implements Listener {
             Session.update(nickname, ip);
         }
         LoginManager.notAuthorizedPlayers.remove(uuid);
-        DiscordBot.webhook.sendMessage(Config.messagePlayerLeft.replace("$discordname", nickname));
+        DiscordBot.webhook.sendMessage(Config.messagePlayerLeft.replace("$discordname", displayName));
         DiscordBot.updateOnlineStatus(player, false);
     }
 
@@ -161,19 +165,24 @@ public class ServerEvents implements Listener {
     @EventHandler
     public void onPlayerAdvancementDoneEvent(PlayerAdvancementDoneEvent event) throws InterruptedException {
         io.papermc.paper.advancement.AdvancementDisplay advancementInfo = event.getAdvancement().getDisplay();
-        boolean isSendRequired = Objects.isNull(advancementInfo.doesAnnounceToChat()) ? false : advancementInfo.doesAnnounceToChat();
-        if (isSendRequired) {
+        if (Objects.isNull(advancementInfo)) return;
+        if (advancementInfo.doesAnnounceToChat()) {
+            String title = PlainTextComponentSerializer.plainText().serialize(advancementInfo.title());
+            String description = PlainTextComponentSerializer.plainText().serialize(advancementInfo.description());
+            String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+
             DiscordBot.webhook.sendMessage(
                     Config.messagePlayerAchievementReceive
-                            .replace("$discordname", event.getPlayer().getDisplayName())
-                            .replace("$achievementname", advancementInfo.title().toString())
-                            .replace("$achievementdescription", advancementInfo.description().toString())
+                            .replace("$discordname", displayName)
+                            .replace("$achievementname", title)
+                            .replace("$achievementdescription", description)
             );
         }
     }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event) throws InterruptedException {
-            DiscordBot.webhook.sendMessage(event.deathMessage().toString());
+        String deathMessage = PlainTextComponentSerializer.plainText().serialize(event.deathMessage());
+        DiscordBot.webhook.sendMessage(deathMessage);
     }
 }

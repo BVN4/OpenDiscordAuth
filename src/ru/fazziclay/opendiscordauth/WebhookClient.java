@@ -41,7 +41,7 @@ public class WebhookClient {
     }
 
     public void sendMessage(String message) throws InterruptedException {
-        this.sendMessage(message, DiscordBot.bot.getSelfUser().getEffectiveName(), DiscordBot.bot.getSelfUser().getAvatarUrl());
+        this.sendMessage(message, "[$prefix] System".replace("$prefix", Config.chatPrefix), DiscordBot.bot.getSelfUser().getAvatarUrl());
     }
 
     private String getRequestBody(String message, String name, String avatar_url) {
