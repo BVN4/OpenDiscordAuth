@@ -37,6 +37,9 @@ public class Config {
     public static String messageCommandMissingPermissions = Main.pluginConfig.getString("message.CommandMissingPermissions");
     public static String messageCommandSuccess = Main.pluginConfig.getString("message.CommandSuccess");
     public static String messageCommandError = Main.pluginConfig.getString("message.CommandError");
+    public static String messagePlayerJoined = Main.pluginConfig.getString("message.PlayerJoined");
+    public static String messagePlayerLeft = Main.pluginConfig.getString("message.PlayerLeft");
+    public static String messagePlayerAchievementReceive = Main.pluginConfig.getString("message.PlayerAchievementReceive");
     public static String globalMessageFormat = Main.pluginConfig.getString("message.GlobalMessageFormat");
     public static String domainProviderToken = Main.pluginConfig.getString("domainProviderInfo.token");
     public static String domainProviderDomainName = Main.pluginConfig.getString("domainProviderInfo.domainName");

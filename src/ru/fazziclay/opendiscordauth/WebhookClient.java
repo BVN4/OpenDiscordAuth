@@ -3,6 +3,7 @@ package ru.fazziclay.opendiscordauth;
 import net.dv8tion.jda.api.entities.Webhook;
 import org.bukkit.Bukkit;
 import org.json.JSONObject;
+import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -31,17 +32,16 @@ public class WebhookClient {
             .header("content-type", "application/json")
             .header("Authorization", Config.discordBotToken)
             .build();
-        //Bukkit.getLogger().info(request.toString());
-        //Bukkit.getLogger().info(body);
         HttpResponse<String> response = null;
         try {
             response = httpclient.send(request, HttpResponse.BodyHandlers.ofString());
-            //Bukkit.getLogger().info(response.statusCode() + " " + response.body());
         } catch (IOException e) {
             Bukkit.getLogger().info(e.getMessage());
         }
+    }
 
-
+    public void sendMessage(String message) throws InterruptedException {
+        this.sendMessage(message, DiscordBot.bot.getSelfUser().getEffectiveName(), DiscordBot.bot.getSelfUser().getAvatarUrl());
     }
 
     private String getRequestBody(String message, String name, String avatar_url) {

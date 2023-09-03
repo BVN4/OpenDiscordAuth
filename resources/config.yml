@@ -40,6 +40,9 @@ message:
   CommandMissingPermissions: "У вас недостаточно прав"
   CommandSuccess: "Команда исполнена"
   CommandError: "Ошибка"
-  GlobalMessageFormat: '&7[&bG&7] [&3%prefix&7] &%color%displayname &9> &7%message'
+  GlobalMessageFormat: "&7[&bG&7] [&3%prefix&7] &%color%displayname &9> &7%message"
+  PlayerJoined: "$discordname вошёл в мир"
+  PlayerLeft: "$discordname вышел из мира"
+  PlayerAchievementReceive: "$discordname получил достижение $achievementname ($achievementdescription)"
 
 opIdsList: ["256114365894230018", "500020124515041283"]
