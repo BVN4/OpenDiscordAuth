@@ -8,6 +8,7 @@ public class Config {
 
     public static String discordBotToken = Main.pluginConfig.getString("discordBotToken");
     public static boolean enablePluginAutoUpdate = Main.pluginConfig.getBoolean("enablePluginAutoUpdate");
+    public static boolean enableSystemMessagesRetranslate = Main.pluginConfig.getBoolean("enableSystemMessagesRetranslate");
     public static String accountsFilePath = Main.pluginConfig.getString("accountsFilePath");
     public static int sessionExpiredDelay = Main.pluginConfig.getInt("sessionExpiredDelay");
 

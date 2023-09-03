@@ -1,9 +1,13 @@
 package ru.fazziclay.opendiscordauth.checkupdates;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 import org.jetbrains.annotations.NotNull;
 import ru.fazziclay.opendiscordauth.UpdateChecker;
-import ru.fazziclay.opendiscordauth.Utils;
 import ru.fazziclay.opendiscordauth.discordbot.Controller;
 
 import java.math.BigDecimal;
@@ -43,7 +47,8 @@ public class CheckUpdatesController extends Controller {
             status
                 ? "✅ Обновление загружено\nℹ Перезапустите сервер для применения обновлений"
                 : "⛔ Не удалось загрузить обновление";
-
-        event.getHook().editOriginal(substring + downloadStatusString).queue();
+        event.getHook().editOriginal(substring + downloadStatusString)
+                .setActionRow(status ? Button.link("Что нового?", UpdateChecker.lastVersionDownloadPageURL) : null)
+                .queue();
     }
 }

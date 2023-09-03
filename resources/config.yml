@@ -5,6 +5,7 @@ discordChatIdForTranslation: "ENTER CHAT ID HERE"
 discordChatIdForLogs: "ENTER CHAT ID HERE"
 chatPrefix: "ENTER CHAT PREFIX HERE"
 enablePluginAutoUpdate: true
+enableSystemMessagesRetranslate: true
 
 domainProviderInfo:
   token: "ENTER DOMAIN PROVIDER TOKEN HERE"
