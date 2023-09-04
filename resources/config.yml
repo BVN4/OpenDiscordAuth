@@ -5,6 +5,7 @@ discordChatIdForTranslation: "ENTER CHAT ID HERE"
 discordChatIdForLogs: "ENTER CHAT ID HERE"
 chatPrefix: "ENTER CHAT PREFIX HERE"
 enablePluginAutoUpdate: true
+enableSystemMessagesRetranslate: true
 
 domainProviderInfo:
   token: "ENTER DOMAIN PROVIDER TOKEN HERE"
@@ -40,6 +41,9 @@ message:
   CommandMissingPermissions: "У вас недостаточно прав"
   CommandSuccess: "Команда исполнена"
   CommandError: "Ошибка"
-  GlobalMessageFormat: '&7[&bG&7] [&3%prefix&7] &%color%displayname &9> &7%message'
+  GlobalMessageFormat: "&7[&bG&7] [&3%prefix&7] &%color%displayname &9> &7%message"
+  PlayerJoined: "$discordname joined the world"
+  PlayerLeft: "$discordname left the world"
+  PlayerAchievementReceive: "$discordname done advancement $achievementname ($achievementdescription)"
 
 opIdsList: ["256114365894230018", "500020124515041283"]

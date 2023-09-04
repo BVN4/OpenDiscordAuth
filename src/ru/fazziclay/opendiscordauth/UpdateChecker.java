@@ -17,6 +17,7 @@ public class UpdateChecker {
     public static Version lastVersion;
     public static String lastVersionDownloadURL = "null";
     public static String lastVersionDownloadPageURL = "null";
+    public static String lastVersionPathNotes = "null";
     public static float lastVersionSize = 0;
     public static boolean isLastVersionRelease = false;
     public static boolean isAwaitingForRestart = false;
@@ -61,6 +62,7 @@ public class UpdateChecker {
             lastVersion = Version.parse(release.getString("name"));
             isLastVersionRelease = !release.getBoolean("prerelease");
             lastVersionDownloadPageURL = release.getString("html_url");
+            lastVersionPathNotes = release.getString("body");
             lastVersionDownloadURL = release.getJSONArray("assets")
                     .getJSONObject(0)
                     .getString("browser_download_url");

@@ -8,6 +8,8 @@
       <root url="jar://$PROJECT_DIR$/libs/httpcore5-5.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/httpcore5-h2-5.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/adventure-api-4.14.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/adventure-key-4.14.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/adventure-text-serializer-plain-4.14.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/bungeecord-api-1.16-R0.3.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/bungeecord-chat-1.16-R0.4.jar!/" />
       <root url="jar://$PROJECT_DIR$/libs/org.json.simple-0.4.jar!/" />

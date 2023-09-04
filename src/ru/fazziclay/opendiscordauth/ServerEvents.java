@@ -1,17 +1,18 @@
 package ru.fazziclay.opendiscordauth;
 
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import de.jeter.chatex.api.events.PlayerUsesGlobalChatEvent;
 import ru.fazziclay.opendiscordauth.discordbot.DiscordBot;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.Objects;
 
@@ -28,7 +29,7 @@ public class ServerEvents implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) throws InterruptedException {
         Utils.debug("[ServerEvents] onPlayerJoin(-)");
 
         Player player = event.getPlayer();
@@ -55,16 +56,21 @@ public class ServerEvents implements Listener {
 
         player.setGameMode(GameMode.SPECTATOR);
         LoginManager.giveCode(uuid, nickname, player);
+        if (Config.enableSystemMessagesRetranslate) {
+            String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+            DiscordBot.webhook.sendMessage(Config.messagePlayerJoined.replace("$discordname", displayName));
+        }
         DiscordBot.updateOnlineStatus(player, true);
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) throws InterruptedException {
         Utils.debug("[ServerEvents] onPlayerQuit(-)");
 
         Player player = event.getPlayer();
         String uuid = player.getUniqueId().toString();
         String nickname = player.getName();
+
         String ip = Utils.getPlayerIp(player);
 
         TempCode tempCode = TempCode.getByValue(2, nickname);
@@ -77,6 +83,10 @@ public class ServerEvents implements Listener {
             Session.update(nickname, ip);
         }
         LoginManager.notAuthorizedPlayers.remove(uuid);
+        if (Config.enableSystemMessagesRetranslate) {
+            String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+            DiscordBot.webhook.sendMessage(Config.messagePlayerLeft.replace("$discordname", displayName));
+        }
         DiscordBot.updateOnlineStatus(player, false);
     }
 
@@ -154,6 +164,35 @@ public class ServerEvents implements Listener {
         if (event.getEntityType() == EntityType.PLAYER) {
             boolean isAuthorized = LoginManager.isAuthorized(event.getEntity().getUniqueId().toString());
             if (!isAuthorized) event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerAdvancementDoneEvent(PlayerAdvancementDoneEvent event) throws InterruptedException {
+        if (Config.enableSystemMessagesRetranslate) {
+            io.papermc.paper.advancement.AdvancementDisplay advancementInfo = event.getAdvancement().getDisplay();
+            if (Objects.isNull(advancementInfo)) return;
+            if (advancementInfo.doesAnnounceToChat()) {
+                String title = PlainTextComponentSerializer.plainText().serialize(advancementInfo.title());
+                String description = PlainTextComponentSerializer.plainText().serialize(advancementInfo.description());
+                String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+
+                DiscordBot.webhook.sendMessage(
+                        Config.messagePlayerAchievementReceive
+                                .replace("$discordname", displayName)
+                                .replace("$achievementname", title)
+                                .replace("$achievementdescription", description)
+                );
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeathEvent(PlayerDeathEvent event) throws InterruptedException {
+        if (Config.enableSystemMessagesRetranslate) {
+            String deathMessage = PlainTextComponentSerializer.plainText().serialize(event.deathMessage());
+            String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+            DiscordBot.webhook.sendMessage(deathMessage.replace(event.getPlayer().getName(), displayName));
         }
     }
 }
