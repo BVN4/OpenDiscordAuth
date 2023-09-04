@@ -191,7 +191,8 @@ public class ServerEvents implements Listener {
     public void onPlayerDeathEvent(PlayerDeathEvent event) throws InterruptedException {
         if (Config.enableSystemMessagesRetranslate) {
             String deathMessage = PlainTextComponentSerializer.plainText().serialize(event.deathMessage());
-            DiscordBot.webhook.sendMessage(deathMessage);
+            String displayName = event.getPlayer().getDisplayName().replaceAll("§.", "");
+            DiscordBot.webhook.sendMessage(deathMessage.replace(event.getPlayer().getName(), displayName));
         }
     }
 }

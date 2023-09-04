@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -110,6 +111,14 @@ public class DiscordBot extends ListenerAdapter {
             case ("rc") -> rc.eventHandle(event);
             case ("get-ip") -> get_ip.eventHandle(event);
             case ("check-updates") -> check_updates.eventHandle(event);
+        }
+    }
+
+    @Override
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+
+        switch (event.getComponentId()) {
+            case ("showPatchNotes") -> check_updates.eventHandle(event);
         }
     }
 

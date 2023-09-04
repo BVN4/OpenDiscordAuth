@@ -42,8 +42,8 @@ message:
   CommandSuccess: "Команда исполнена"
   CommandError: "Ошибка"
   GlobalMessageFormat: "&7[&bG&7] [&3%prefix&7] &%color%displayname &9> &7%message"
-  PlayerJoined: "$discordname вошёл в мир"
-  PlayerLeft: "$discordname вышел из мира"
-  PlayerAchievementReceive: "$discordname получил достижение $achievementname ($achievementdescription)"
+  PlayerJoined: "$discordname joined the world"
+  PlayerLeft: "$discordname left the world"
+  PlayerAchievementReceive: "$discordname done advancement $achievementname ($achievementdescription)"
 
 opIdsList: ["256114365894230018", "500020124515041283"]
